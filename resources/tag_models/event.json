@@ -1,0 +1,29 @@
+{
+  "tag": {
+	"api_key": "", // String - API key - Make sure the request is from a valid client (idea nicked from Keen.io) useful if a page gets copied onto a Russian website and creates noise
+	"version": "", // Version of the tracking client e.g. "JS v1.2"
+	"type": "event", // Type of request (page or event)
+	"id": "", // ID of this request, must be unique
+	"offset": 0 // Delay of this tag between event happening and being sent to server - milliseconds
+  },
+
+  "event": {
+	"page_id": "", // ID of the page on which this event happened.
+	"parent_id": "", // Parent event ID if this is a child event.
+	"category": "", // Main category of the event, likely often the component name e.g. video
+	"action": "", // The action performed e.g. play
+	"key": "", // defines what value is passed
+
+	"value": "value",
+	"data": { // Data is an object and can have several variables. These values do not get extracted into separate columns in Redshift, so can only be accessed through inefficient Redshift functions: http://docs.aws.amazon.com/redshift/latest/dg/json-functions.html
+	}
+
+  },
+
+  "user": {
+	"session_id": "", // User's current logged in session ID, from membership
+	"guid": "", // User ID on ft.com
+	"passport_id": "", // User ID on ft.com - legacy
+	"spoor_id": "" // Our device ID, used to keep track of anon users.
+  }
+}

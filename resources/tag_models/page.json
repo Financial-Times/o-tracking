@@ -1,0 +1,57 @@
+{
+  "tag": {
+	"api_key": "", // String - API key - Make sure the request is from a valid client (idea nicked from Keen.io) useful if a page gets copied onto a Russian website and creates noise
+	"version": "", // Version of the tracking client e.g. "JS v1.2"
+	"type": "page", // Type of request (page or event)
+	"id": "", // ID of this request, must be unique
+	"offset": 0 // Delay of this tag between event happening and being sent to server - milliseconds
+  },
+
+  "page": {
+	"url": "",
+	"referrer": "",
+	"channel": "", // Our products e.g. ft.com, webapp, flipboard
+	"uuid": "", // UUID of the page, won't always get this
+	"asset_type": "section", // Is this available from an API during enrichment?
+	"page_class_1": "",
+	"page_class_2": "",
+	"sitemap": "Sections.Africa"
+  },
+
+  "device": {
+	"user_agent": "", // User agent, usually get this from headers, but are cases where tags are forwarded on and need to explicitly set the user’s agent.
+	"ip": "" // IP address, usually get this from headers, but are cases where tags are forwarded on and need to explicitly set the user’s IP
+  },
+
+  "user": {
+	"session_id": "", // User's current logged in session ID, from membership
+	"guid": "", // User ID on ft.com
+	"passport_id": "", // User ID on ft.com - legacy
+	"spoor_id": "" // Our device ID, used to keep track of anon users.
+  },
+
+  "other": { // Anything else specific to this rendering of the page
+	"ad_refresh": "",
+	"barrier": "",
+	"segment_id":"",
+	"offer_id": "",
+	"seg_id":"",
+	"dfp_zone": "",
+	"dfp_site": "",
+	"dfp_targeting": "",
+	"twitter_login": false,
+	"gift_article_used": "",
+	"step_number": "",
+	"step_name": "",
+	"payment_term": "",
+	"app_edition": "",
+	"transition_action": "",
+	"search_term": "",
+	"sub": "",
+	"ticker": "",
+	"brand": "",
+	"weekend": false,
+	"edition": "UK",
+	"theme": ""
+  }
+}
