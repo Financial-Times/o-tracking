@@ -13,11 +13,9 @@
 	"category": "", // Main category of the event, likely often the component name e.g. video
 	"action": "", // The action performed e.g. play
 	"key": "", // defines what value is passed
-
 	"value": "value",
 	"data": { // Data is an object and can have several variables. These values do not get extracted into separate columns in Redshift, so can only be accessed through inefficient Redshift functions: http://docs.aws.amazon.com/redshift/latest/dg/json-functions.html
 	}
-
   },
 
   "user": {

@@ -10,12 +10,16 @@
   "page": {
 	"url": "",
 	"referrer": "",
-	"channel": "", // Our products e.g. ft.com, webapp, flipboard
+	"product": "", // Our products e.g. ft.com, webapp, flipboard
 	"uuid": "", // UUID of the page, won't always get this
-	"asset_type": "section", // Is this available from an API during enrichment?
-	"page_class_1": "",
-	"page_class_2": "",
-	"sitemap": "Sections.Africa"
+	"data": { // Anything else specific to this rendering of the page
+	  "barrier": "", // Whether the page had a barrier
+	  "segment_id":"", // Marketing Segment ID
+	  "offer_id": "", // Marketing Offer ID
+	  "seg_id":"", // Marketing SegID
+	  "step_number": "", // Step number within a defined process or funnel.
+	  "step_name": "" // Step name within a defined process or funnel.
+	}
   },
 
   "device": {
@@ -28,30 +32,5 @@
 	"guid": "", // User ID on ft.com
 	"passport_id": "", // User ID on ft.com - legacy
 	"spoor_id": "" // Our device ID, used to keep track of anon users.
-  },
-
-  "other": { // Anything else specific to this rendering of the page
-	"ad_refresh": "",
-	"barrier": "",
-	"segment_id":"",
-	"offer_id": "",
-	"seg_id":"",
-	"dfp_zone": "",
-	"dfp_site": "",
-	"dfp_targeting": "",
-	"twitter_login": false,
-	"gift_article_used": "",
-	"step_number": "",
-	"step_name": "",
-	"payment_term": "",
-	"app_edition": "",
-	"transition_action": "",
-	"search_term": "",
-	"sub": "",
-	"ticker": "",
-	"brand": "",
-	"weekend": false,
-	"edition": "UK",
-	"theme": ""
   }
 }
