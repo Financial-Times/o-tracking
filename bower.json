@@ -1,11 +1,17 @@
 {
   "name": "o-tracking",
-  "main": ["main.js"],
+  "main": [
+    "main.js"
+  ],
   "ignore": [
     "node_modules",
     "resources",
     "test",
     ".idea"
   ],
-  "description": "Origami module for FT tracking."
+  "description": "Origami module for FT tracking.",
+  "dependencies": {
+    "o-grid": "~3.1.8",
+    "o-viewport": "~1.4.0"
+  }
 }
