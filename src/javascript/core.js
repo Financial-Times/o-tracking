@@ -87,7 +87,9 @@ function track(config, callback) {
 		device: {
 			spoor_session: Session.session(),
 			spoor_id: User.userID(),
-			user_agent: window.navigator.userAgent
+			user_agent: window.navigator.userAgent,
+			layout: require('o-grid').getCurrentLayout(),
+			orientation: require('o-viewport').getOrientation()
 		}
 	}, request);
 
