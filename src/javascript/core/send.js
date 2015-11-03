@@ -165,6 +165,9 @@ function sendRequest(request, callback) {
 
 	started(request.id);
 
+	// See if it's the same request being repeated here or in the pipeline.
+	request.context.otrackingbuster = Math.random() * 12345;
+
 	path = JSON.stringify(request);
 
 	utils.log('path', path);
