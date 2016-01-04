@@ -46,6 +46,7 @@ function migrate_across_domains(store, user_id) {
 
 	// Expire the cookie on the (sub)domain
 	window.document.cookie = 'spoor-id=0;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;';
+	window.document.cookie = 'spoor-id=0;expires=Thu, 01 Jan 1970 00:00:00 GMT;';
 	// Re-set the cookie on the  root domain
 	store.write(proper_id);
 
