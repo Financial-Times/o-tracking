@@ -30,9 +30,10 @@ function sendRequest(request, callback) {
 	const queueTime = request.queueTime;
 	const offlineLag = new Date().getTime() - queueTime;
 	let path;
-	const transport = (navigator.sendBeacon && Promise && (settings.get('config') || {}).useSendBeacon) ? transports.get('sendBeacon')() :
-										window.XMLHttpRequest && 'withCredentials' in new window.XMLHttpRequest() ? transports.get('xhr')() :
-										transports.get('image')();
+	const transportName = (navigator.sendBeacon && Promise && (settings.get('config') || {}).useSendBeacon) ? 'sendBeacon' :
+										window.XMLHttpRequest && 'withCredentials' in new window.XMLHttpRequest() ? 'xhr' :
+										'image';
+	const transport = transports.get(transportName)();
 	const user_callback = request.callback;
 
 	const core_system = settings.get('config') && settings.get('config').system || {};
@@ -43,6 +44,7 @@ function sendRequest(request, callback) {
 	});
 
 	request = utils.merge({ system: system }, request);
+	request.context.transport = transportName;
 
 	// Only bothered about offlineLag if it's longer than a second, but less than 12 months. (Especially as Date can be dodgy)
 	if (offlineLag > 1000 && offlineLag < (12 * 30 * 24 * 60 * 60 * 1000)) {
