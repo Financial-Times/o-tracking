@@ -32,6 +32,7 @@ const defaultEventConfig = function () {
  * @return {undefined}
  */
 function event(trackingEvent, callback) {
+	// Note: utils.is(thing) is equivalent to utils.is(thing, undefined) i.e. the belwo are checks for undefinedness
 	if (utils.is(trackingEvent.detail.category) || utils.is(trackingEvent.detail.action)) {
 		const noCategoryActionVals = 'Missing category or action values';
 		utils.broadcast('oErrors', 'log', {
@@ -41,10 +42,26 @@ function event(trackingEvent, callback) {
 		throw noCategoryActionVals;
 	}
 
+	let context;
+
+	if (trackingEvent.detail.context) {
+		// clone the context
+		context = utils.merge(trackingEvent.detail.context);
+
+		// Backwards compatibility for previous, pobably widely used, buggy implementation
+		// TODO: Drop in v2
+		// clone the detail
+		const detail = utils.merge(trackingEvent.detail);
+		delete detail.context;
+		context = utils.merge(detail, context);
+	} else {
+		context = trackingEvent.detail
+	}
+
 	const config = utils.merge(defaultEventConfig(), {
 		category: trackingEvent.detail.category,
 		action: trackingEvent.detail.action,
-		context: trackingEvent.detail
+		context: context
 	});
 
 	delete config.context.category;
