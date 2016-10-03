@@ -55,7 +55,7 @@ function event(trackingEvent, callback) {
 		delete detail.context;
 		context = utils.merge(detail, context);
 	} else {
-		context = trackingEvent.detail
+		context = trackingEvent.detail;
 	}
 
 	const config = utils.merge(defaultEventConfig(), {
