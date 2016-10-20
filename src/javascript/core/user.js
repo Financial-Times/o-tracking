@@ -61,6 +61,18 @@ function migrate_across_domains(store, user_id) {
 }
 
 /**
+ * Parse a user ID from a URL query param
+ * @param  {string} name   key name
+ * @param  {string} search URL search param (e.g. '?spoor-id=xxx&b=c')
+ * @return {string}        parsed ID (e.g. 'xxx')
+ */
+function userIDFromQuery(name, query) {
+	const regexp = new RegExp(`(?:&|\\?)${name}=([^&]+)`);
+	const matches = (query || '').match(regexp);
+	return (matches || [])[1];
+}
+
+/**
  * Init
  *
  * @param {String|Object} value The value of a userID to use or configuration object.
@@ -87,6 +99,10 @@ function init(value) {
 	}
 
 	if (!userID) {
+		userID = userIDFromQuery(config.name, location.search);
+	}
+
+	if (!userID) {
 		userID = utils.guid();
 	}
 
@@ -102,5 +118,6 @@ function destroy() {
 module.exports = {
 	init: init,
 	userID: function () { return userID; },
+	userIDFromQuery,
 	destroy: destroy
 };

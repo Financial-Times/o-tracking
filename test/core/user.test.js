@@ -49,4 +49,22 @@ describe('Core.User', function () {
 		});
 	});
 
+	describe('user ID from query param', function () {
+		it('should parse a simple query', function () {
+			assert.equal(User.userIDFromQuery('spoor-id', '?spoor-id=abc'), 'abc');
+		});
+
+		it('should parse the second of three params', function () {
+			assert.equal(User.userIDFromQuery('spoor-id', '?a=b&spoor-id=abc&y=z'), 'abc');
+		});
+
+		it('should ignore empty param', function () {
+			assert.equal(User.userIDFromQuery('spoor-id', '?spoor-id='), undefined);
+		});
+
+		it('should handle special chars', function () {
+			assert.equal(User.userIDFromQuery('spoor-id', '?spoor-id=ab^@£$()£$-_9012&b=c'), 'ab^@£$()£$-_9012');
+		});
+	});
+
 });
