@@ -122,7 +122,7 @@ const getEventProperties = event => {
 // Controller for handling click events
 const handleClickEvent = eventData => (clickEvent, clickElement) => {
 	//we don't want to track clicks to anonymous services like securedrop
-	if (clickElement.getAttribute("data-o-tracking-do-not-track") === "true") return;
+	if (clickElement.getAttribute("data-o-tracking-do-not-track")) return;
 	const context = getEventProperties(clickEvent);
 	context.domPathTokens = getTrace(clickElement);
 	context.url = window.document.location.href || null;
