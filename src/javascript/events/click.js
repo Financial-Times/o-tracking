@@ -74,7 +74,7 @@ const getAllElementProperties = el => {
 		}
 		return returnObject;
 	}, {});
-}
+};
 
 // Get some properties of a given element.
 const getElementProperties = el => {
