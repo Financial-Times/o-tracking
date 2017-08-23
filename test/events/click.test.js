@@ -78,7 +78,7 @@ describe('click', function () {
 		aLinkToGoogle.href = "http://www.google.com";
 		aLinkToGoogle.text = "A link to Google's website";
 		aLinkToGoogle.id = "anchorA";
-		aLinkToGoogle.setAttribute('data-trackable-foo', 'bar');
+		aLinkToGoogle.setAttribute('data-trackable-context-foo', 'bar');
 
 		aLinkToGoogle.addEventListener('click', function(e){
 			e.preventDefault();

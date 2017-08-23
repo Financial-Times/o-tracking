@@ -88,14 +88,14 @@ const getElementProperties = el => {
 	return elementProperties;
 };
 
-// Get only the custom data-trackable-? properties of a given element
+// Get only the custom data-trackable-context-? properties of a given element
 const getCustomTrackableProperties = el => {
 	let elementProperties = getAllElementProperties(el);
 
 	// Collect any attribute that matches given strings.
 	Array.from(el.attributes)
-		.filter(attribute => attribute.name.match(/^data-trackable-/i))
-		.forEach(attribute => elementProperties[attribute.name.replace('data-trackable-', '')] = attribute.value);
+		.filter(attribute => attribute.name.match(/^data-trackable-context-/i))
+		.forEach(attribute => elementProperties[attribute.name.replace('data-trackable-context-', '')] = attribute.value);
 	
 	return elementProperties;
 };
