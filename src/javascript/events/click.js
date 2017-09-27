@@ -12,7 +12,6 @@ let internalQueue;
 const elementPropertiesToCollect = [
 	"nodeName",
 	"className",
-	"id",
 	"href",
 	"text",
 	"role",
