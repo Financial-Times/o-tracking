@@ -16,6 +16,7 @@ module.exports = function(karma) {
 		files: [
 			'https://polyfill.io/v2/polyfill.js',
 			'test/setup.js',
+			'test/*.test.js',
 			'test/**/*.test.js'
 		],
 
