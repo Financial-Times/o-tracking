@@ -84,7 +84,7 @@ const getElementProperties = el => {
 	Array.from(el.attributes)
 		.filter(attribute => attribute.name.match(/^data-trackable|^data-o-|^aria-/i))
 		.forEach(attribute => {
-			elementProperties[attribute.name] = attribute.value;
+			elementProperties[attribute.name] = attribute.value.trim();
 		});
 
 	return elementProperties;
@@ -116,7 +116,7 @@ const getTrace = el => {
 		// If the element happens to have a data-trackable attribute, get the siblings
 		// and position of the clicked element (relative to the current element).
 		if (elementProperties["data-trackable"]) {
-			elementProperties = Object.assign (
+			elementProperties = Object.assign(
 				elementProperties,
 				getSiblingsAndPosition(el, clickedEl, selector)
 			);
