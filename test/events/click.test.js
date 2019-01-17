@@ -1,5 +1,5 @@
 /*global require, describe, it, before, after, sinon, document */
-
+require('../setup');
 const assert = require("assert");
 const Queue = require("../../src/javascript/core/queue");
 const settings = require("../../src/javascript/core/settings");
@@ -27,15 +27,15 @@ describe('click', function () {
 	});
 
 	after(function () {
-		new Queue('requests').replace([]);  // Empty the queue
-		settings.destroy('config');  // Empty settings.
+		new Queue('requests').replace([]); // Empty the queue
+		settings.destroy('config'); // Empty settings.
 	});
 
 	it('should track an event for a click', function (done) {
 
 		sinon.spy(core, 'track');
 
-		click.init("blah");
+		click.init("blah", '#anchorA');
 
 		const aLinkToGoogle = document.createElement('a');
 
@@ -47,7 +47,7 @@ describe('click', function () {
 			e.preventDefault();
 		}); //we don't want the browser to follow click in test
 
-		let event = new MouseEvent('click', {
+		const event = new MouseEvent('click', {
 			'view': window,
 			'bubbles': true,
 			'cancelable': true
@@ -66,12 +66,12 @@ describe('click', function () {
 		}, 10);
 
 	});
-	
+
 	it('should track custom event properties and send through in the context', (done) => {
 
 		sinon.spy(core, 'track');
 
-		click.init("blah");
+		click.init("blah", '#anchorB');
 
 		const aLinkToGoogle = document.createElement('a');
 
@@ -83,7 +83,7 @@ describe('click', function () {
 			e.preventDefault();
 		}); //we don't want the browser to follow click in test
 
-		let event = new MouseEvent('click', {
+		const event = new MouseEvent('click', {
 			'view': window,
 			'bubbles': true,
 			'cancelable': true
@@ -98,14 +98,14 @@ describe('click', function () {
 			core.track.restore();
 			done();
 		}, 10);
-		
+
 	});
 
 	it('should not track an event for a securedrop click', function (done) {
 
 		sinon.spy(core, 'track');
 
-		click.init("blah");
+		click.init("blah", '#anchorC');
 
 		const aLinkToSecuredrop = document.createElement('a');
 
@@ -117,7 +117,7 @@ describe('click', function () {
 			e.preventDefault();
 		}); //we don't want the browser to follow click in test
 
-		let event = new MouseEvent('click', {
+		const event = new MouseEvent('click', {
 			'view': window,
 			'bubbles': true,
 			'cancelable': true
@@ -137,4 +137,78 @@ describe('click', function () {
 
 	});
 
+	it('should not track straight away when the link points to the same domain we are currently on', function (done) {
+		sinon.spy(core, 'track');
+
+		click.init("blah", '#anchorD');
+
+		core.track.resetHistory(); // click.init() makes a call to core.track() so clearing the history here to avoid false positives
+
+		const aLinkToPageOnSameDomain = document.createElement('a');
+		const currentHost = window.document.location.hostname;
+
+		aLinkToPageOnSameDomain.href = "https://" + currentHost + "/a-page-on-the-same-domain";
+		aLinkToPageOnSameDomain.text = "A link to another page on the same domain";
+		aLinkToPageOnSameDomain.id = "anchorD";
+
+		aLinkToPageOnSameDomain.addEventListener('click', function(e){
+			e.preventDefault();
+		}); //we don't want the browser to follow click in test
+
+		const event = new MouseEvent('click', {
+			'view': window,
+			'bubbles': true,
+			'cancelable': true
+		});
+
+		document.body.appendChild(aLinkToPageOnSameDomain);
+		aLinkToPageOnSameDomain.dispatchEvent(event, true);
+
+		setTimeout(() => {
+			assert.equal(core.track.notCalled, true, "click event not tracked");
+
+			core.track.restore();
+			done();
+
+		}, 10);
+
+	});
+
+	it('should skip the queue when data-o-tracking-skip-queue is "true" on the link', function (done) {
+		sinon.spy(core, 'track');
+
+		click.init("blah", '#anchorE');
+
+		core.track.resetHistory(); // click.init() makes a call to core.track() so clearing the history here to avoid false positives
+
+		const aLinkToPageOnSameDomain = document.createElement('a');
+		const currentHost = window.document.location.hostname;
+
+		aLinkToPageOnSameDomain.href = "https://" + currentHost + "/a-page-on-the-same-domain";
+		aLinkToPageOnSameDomain.text = "A link to another page on the same domain";
+		aLinkToPageOnSameDomain.id = "anchorE";
+		aLinkToPageOnSameDomain.setAttribute("data-o-tracking-skip-queue", "true");
+
+		aLinkToPageOnSameDomain.addEventListener('click', function(e){
+			e.preventDefault();
+		}); //we don't want the browser to follow click in test
+
+		const event = new MouseEvent('click', {
+			'view': window,
+			'bubbles': true,
+			'cancelable': true
+		});
+
+		document.body.appendChild(aLinkToPageOnSameDomain);
+		aLinkToPageOnSameDomain.dispatchEvent(event, true);
+
+		setTimeout(() => {
+			assert.equal(core.track.calledOnce, true, "click event not tracked");
+
+			core.track.restore();
+			done();
+
+		}, 10);
+
+	});
 });

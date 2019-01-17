@@ -48,7 +48,7 @@ function track(config, callback) {
 	const session = Session.session();
 
 	// Set up the base request object with some values which should always be sent.
-	let request = {
+	const request = {
 		async: true,
 		callback: callback || function() {},
 		context: {
@@ -58,6 +58,7 @@ function track(config, callback) {
 		user: {
 			passport_id: utils.getValueFromCookie(/USERID=([0-9]+):/) || utils.getValueFromCookie(/PID=([0-9]+)\_/),
 			ft_session: utils.getValueFromCookie(/FTSession=([^;]+)/),
+			ft_session_s: utils.getValueFromCookie(/FTSession_s=([^;]+)/)
 		},
 		device: {
 			spoor_session: session.id,

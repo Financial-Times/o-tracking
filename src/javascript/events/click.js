@@ -1,5 +1,5 @@
 /*global module, require */
-'use strict';  // eslint-disable-line strict
+'use strict'; // eslint-disable-line strict
 
 const Delegate = require('ftdomdelegate');
 const Queue = require('../core/queue');
@@ -26,10 +26,13 @@ const eventPropertiesToCollect = [
 
 // Trigger the event tracking
 const track = eventData => {
-	const href = eventData.context.domPathTokens[0].href || null;
+	const firstDomPathToken = eventData.context.domPathTokens[0];
+	const href = firstDomPathToken.href || null;
+	const oTrackingSkipQueueAttr = firstDomPathToken['data-o-tracking-skip-queue'];
+	const skipQueue = (oTrackingSkipQueueAttr && oTrackingSkipQueueAttr.toLowerCase() === 'true') || false;
 	const isInternal = href && href.indexOf(window.document.location.hostname) > -1;
 
-	if (isInternal) {
+	if (isInternal && !skipQueue) {
 		eventData.context.source_id = Core.getRootID();
 
 		// Queue the event and send it on the next page load
@@ -44,7 +47,7 @@ const track = eventData => {
 
 // Utility for trimming strings
 const sanitise = property => {
-	return (typeof property === 'string') ? property.trim() : property;
+	return typeof property === 'string' ? property.trim() : property;
 };
 
 // For a given container element, get the number of elements that match the
@@ -52,7 +55,7 @@ const sanitise = property => {
 const getSiblingsAndPosition = (el, clickedEl, selector) => {
 	const siblings = Array.from(el.querySelectorAll(selector));
 	const position = siblings.findIndex(item => item === clickedEl);
-	if(position === -1) return;
+	if(position === -1) {return;}
 	return {
 		siblings: siblings.length,
 		position,
@@ -76,27 +79,50 @@ const getAllElementProperties = el => {
 };
 
 // Get some properties of a given element.
-const getElementProperties = el => {
-	let elementProperties = getAllElementProperties(el);
+const getDomPathProps = (attrs, props) => {
 
 	// Collect any attribute that matches given strings.
-	Array.from(el.attributes)
+	attrs
 		.filter(attribute => attribute.name.match(/^data-trackable|^data-o-|^aria-/i))
-		.forEach(attribute => elementProperties[attribute.name] = attribute.value);
+		.forEach(attribute => {
+			props[attribute.name] = attribute.value;
+		});
 
-	return elementProperties;
+	return props;
 };
 
 // Get only the custom data-trackable-context-? properties of a given element
-const getCustomTrackableProperties = el => {
-	let elementProperties = getAllElementProperties(el);
+const getContextProps = (attrs, props, isClickedEl) => {
+
+	const customProps = {};
+
+	// for the clicked element collect properties like className, nodeName
+	if (isClickedEl) {
+		elementPropertiesToCollect.forEach(name => {
+			if (typeof props[name] !== 'undefined' && name !== 'id') {
+				customProps[name] = props[name];
+			}
+		});
+	}
 
 	// Collect any attribute that matches given strings.
-	Array.from(el.attributes)
+	attrs
 		.filter(attribute => attribute.name.match(/^data-trackable-context-/i))
-		.forEach(attribute => elementProperties[attribute.name.replace('data-trackable-context-', '')] = attribute.value);
-	
-	return elementProperties;
+		.forEach(attribute => {
+			customProps[attribute.name.replace('data-trackable-context-', '')] = attribute.value;
+		});
+
+	return customProps;
+};
+
+const assignIfUndefined = (subject, target) => {
+	for (const prop in subject) {
+		if (!target[prop]) {
+			target[prop] = subject[prop];
+		} else {
+			console.warn(`You can't set a custom property called ${prop}`);
+		}
+	}
 };
 
 // Trace the clicked element and all of its parents, collecting properties as we go
@@ -104,30 +130,39 @@ const getTrace = el => {
 	const rootEl = document;
 	const clickedEl = el;
 	const selector = clickedEl.getAttribute('data-trackable') ? `[data-trackable="${clickedEl.getAttribute('data-trackable')}"]` : clickedEl.nodeName;
-	let trace = [];
+	const trace = [];
+	const customContext = {};
 	while (el && el !== rootEl) {
-		let elementProperties = getElementProperties(el);
+		const props = getAllElementProperties(el);
+		const attrs = Array.from(el.attributes);
+		let domPathProps = getDomPathProps(attrs, props);
 
 		// If the element happens to have a data-trackable attribute, get the siblings
 		// and position of the clicked element (relative to the current element).
-		if (elementProperties["data-trackable"]) {
-			elementProperties = Object.assign (
-				elementProperties,
+		if (domPathProps["data-trackable"]) {
+			domPathProps = Object.assign(
+				domPathProps,
 				getSiblingsAndPosition(el, clickedEl, selector)
 			);
 		}
-		trace.push(elementProperties);
+
+		trace.push(domPathProps);
+
+		const contextProps = getContextProps(attrs, props, el === clickedEl);
+
+		assignIfUndefined(contextProps, customContext);
+
 		el = el.parentNode;
 	}
-	return trace;
+	return { trace, customContext };
 };
 
 // Get properties for the event (as opposed to properties of the clicked element)
 // Available properties include mouse x- and y co-ordinates, for example.
 const getEventProperties = event => {
-	let eventProperties = eventPropertiesToCollect.reduce((returnObject, property) => {
+	const eventProperties = eventPropertiesToCollect.reduce((returnObject, property) => {
 		try {
-			if (event[property]) returnObject[property] = sanitise(event[property]);
+			if (event[property]) {returnObject[property] = sanitise(event[property]);}
 		}
 		catch (e) {
 			console.log(e);
@@ -140,20 +175,14 @@ const getEventProperties = event => {
 // Controller for handling click events
 const handleClickEvent = eventData => (clickEvent, clickElement) => {
 	//we don't want to track clicks to anonymous services like securedrop
-	if (clickElement.getAttribute("data-o-tracking-do-not-track") === "true") return;
+	if (clickElement.getAttribute("data-o-tracking-do-not-track") === "true") {return;}
 	const context = getEventProperties(clickEvent);
-	const customTrackableProperties = getCustomTrackableProperties(clickElement);
-	context.domPathTokens = getTrace(clickElement);
+	const { trace, customContext} = getTrace(clickElement);
+	context.domPathTokens = trace;
 	context.url = window.document.location.href || null;
-	
-	for (let prop in customTrackableProperties) {
-		if (!context[prop]) {
-			context[prop] = customTrackableProperties[prop];
-		} else {
-			console.warn(`You can't set a custom property called ${prop}`);
-		}
-	}
-	
+
+	assignIfUndefined(customContext, context);
+
 	eventData.context = context;
 
 	// Merge the event data into the "parent" config data
@@ -180,13 +209,13 @@ const init = (category, elementsToTrack) => {
 	elementsToTrack = elementsToTrack || 'a, button, input, [role="button"]'; // See https://github.com/ftlabs/ftdomdelegate#selector-string
 
 	// Note: `context` is the term o-tracking uses for the data that is sent to spoor
-	let eventData = {
+	const eventData = {
 		action: 'click',
 		category: category || 'o-tracking'
 	};
 
 	// Activate the click event listener
-	let delegate = new Delegate(document.body);
+	const delegate = new Delegate(document.body);
 	delegate.on('click', elementsToTrack, handleClickEvent(eventData), true);
 
 	// Track any queued events

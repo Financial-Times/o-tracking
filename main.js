@@ -1,5 +1,5 @@
 /*global require, module */
-'use strict';  // eslint-disable-line strict
+'use strict'; // eslint-disable-line strict
 
 const settings = require('./src/javascript/core/settings');
 const user = require('./src/javascript/core/user');
@@ -10,7 +10,7 @@ const send = require('./src/javascript/core/send');
  * The version of the tracking module.
  * @type {string}
  */
-const version = '1.2.3';
+const version = '1.4.1';
 /**
  * The source of this event.
  * @type {string}
@@ -113,7 +113,7 @@ Tracking.prototype.init = function(config) {
 		return this;
 	}
 
-	const hasDeclarativeConfig = !!this._getDeclarativeConfigElement();
+	const hasDeclarativeConfig = Boolean(this._getDeclarativeConfigElement());
 
 	config = config || {};
 	if (hasDeclarativeConfig) {
@@ -132,9 +132,10 @@ Tracking.prototype.init = function(config) {
 
 	settings.set('page_sent', false);
 
-	// Set up the user from stored - may later be updated by config
-	user.init();
+	const cookieDomain = config ? config.cookieDomain : false;
 
+	// Set up the user from stored - may later be updated by config
+	user.init(false, cookieDomain);
 	this.updateConfig(config);
 
 	// Session

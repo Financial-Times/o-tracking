@@ -7,6 +7,7 @@ const settings = require('./settings');
 const utils = require('../utils');
 const Queue = require('./queue');
 const transports = require('./transports');
+const isIe11 = function () { return !!window.MSInputMethodContext && !!document.documentMode; };
 /**
  * Default collection server.
  */
@@ -25,7 +26,7 @@ let queue;
  * @return {boolean} Should we use sendBeacon?
  */
 function should_use_sendBeacon() {
-	return (navigator.sendBeacon && Promise && (settings.get('config') || {}).useSendBeacon);
+	return navigator.sendBeacon && Promise && (settings.get('config') || {}).useSendBeacon;
 }
 
 /**
@@ -38,10 +39,10 @@ function should_use_sendBeacon() {
 function sendRequest(request, callback) {
 	const queueTime = request.queueTime;
 	const offlineLag = new Date().getTime() - queueTime;
-	let path;
+
 	const transport = should_use_sendBeacon() ? transports.get('sendBeacon')() :
-										window.XMLHttpRequest && 'withCredentials' in new window.XMLHttpRequest() ? transports.get('xhr')() :
-										transports.get('image')();
+		window.XMLHttpRequest && 'withCredentials' in new window.XMLHttpRequest() ? transports.get('xhr')() :
+			transports.get('image')();
 	const user_callback = request.callback;
 
 	const core_system = settings.get('config') && settings.get('config').system || {};
@@ -49,12 +50,13 @@ function sendRequest(request, callback) {
 		api_key: settings.get('api_key'), // String - API key - Make sure the request is from a valid client (idea nicked from Keen.io) useful if a page gets copied onto a Russian website and creates noise
 		version: settings.get('version'), // Version of the tracking client e.g. '1.2'
 		source: settings.get('source'), // Source of the tracking client e.g. 'o-tracking'
+		transport: transport.name, // The transport method used.
 	});
 
 	request = utils.merge({ system: system }, request);
 
 	// Only bothered about offlineLag if it's longer than a second, but less than 12 months. (Especially as Date can be dodgy)
-	if (offlineLag > 1000 && offlineLag < (12 * 30 * 24 * 60 * 60 * 1000)) {
+	if (offlineLag > 1000 && offlineLag < 12 * 30 * 24 * 60 * 60 * 1000) {
 		request.time = request.time || {};
 		request.time.offset = offlineLag;
 	}
@@ -66,9 +68,7 @@ function sendRequest(request, callback) {
 	utils.log('user_callback', user_callback);
 	utils.log('PreSend', request);
 
-	path = JSON.stringify(request);
-
-	utils.log('path', path);
+	const stringifiedData = JSON.stringify(request);
 
 	transport.complete(function (error) {
 		if (utils.is(user_callback, 'function')) {
@@ -77,23 +77,42 @@ function sendRequest(request, callback) {
 		}
 
 		if (error) {
-			// Re-add to the queue if it failed.
-			// Re-apply queueTime here
-			request.queueTime = queueTime;
-			queue.add(request).save();
+			// If IE11 XHR error, try using image method
+			if (isIe11() && transport.name === 'xhr') {
+				let image_method = transports.get('image')();
+				// Append image label to transport value so that we know it tried xhr first
+				request.system.transport = [request.system.transport,image_method.name].join('-');
+				image_method.send(url, JSON.stringify(request));
+				image_method.complete(function () {
+					if (callback) {
+						callback();
+					}
+				});
+			} else {
+				// Re-add to the queue if it failed.
+				// Re-apply queueTime here
+				request.queueTime = queueTime;
+				queue.add(request).save();
 
-			utils.broadcast('oErrors', 'log', {
-				error: error.message,
-				info: { module: 'o-tracking' }
-			});
-		} else {
-			callback && callback();
+				utils.broadcast('oErrors', 'log', {
+					error: error.message,
+					info: { module: 'o-tracking' }
+				});
+			}
+		} else if (callback) {
+			callback();
 		}
 	});
+	let url = domain;
+
+	if (request && request.category && request.action) {
+		const type = `type=${request.category}:${request.action}`;
+		url = url.indexOf('?') > -1 ? `${url}&${type}` : `${url}?${type}`;
+	}
 
 	// Both developer and noSend flags have to be set to stop the request sending.
 	if (!(settings.get('developer') && settings.get('no_send'))) {
-		transport.send(domain, path);
+		transport.send(url, stringifiedData);
 	}
 }
 
@@ -124,36 +143,36 @@ function run(callback) {
 		callback = function () {};
 	}
 
-    // Investigate queue lengths bug
-    // https://jira.ft.com/browse/DTP-330
-    const all_events = queue.all();
+	// Investigate queue lengths bug
+	// https://jira.ft.com/browse/DTP-330
+	const all_events = queue.all();
 
-    if (all_events.length > 200) {
-        const counts = {};
+	if (all_events.length > 200) {
+		const counts = {};
 
-        all_events.forEach(function (event) {
-            const label = [event.category, event.action].join(':');
+		all_events.forEach(function (event) {
+			const label = [event.category, event.action].join(':');
 
-            if (!counts.hasOwnProperty(label)) {
-                counts[label] = 0;
-            }
+			if (!counts.hasOwnProperty(label)) {
+				counts[label] = 0;
+			}
 
-            counts[label] += 1;
-        });
+			counts[label] += 1;
+		});
 
-        queue.replace([]);
+		queue.replace([]);
 
-        queue.add({
-            category: 'o-tracking',
-            action: 'queue-bug',
-            context: {
-                url: document.url,
-                queue_length: all_events.length,
-                counts: counts,
-                storage: queue.storage.storage._type
-            }
-        });
-    }
+		queue.add({
+			category: 'o-tracking',
+			action: 'queue-bug',
+			context: {
+				url: document.url,
+				queue_length: all_events.length,
+				counts: counts,
+				storage: queue.storage.storage._type
+			}
+		});
+	}
 
 	const next = function () {
 		run();
