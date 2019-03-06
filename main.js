@@ -85,6 +85,12 @@ Tracking.prototype.event = event;
 Tracking.prototype.page = page;
 
 /**
+* To initalise view events for components/elements.
+* @see {@link view#init}
+*/
+Tracking.prototype.view = require('./src/javascript/events/component-view');
+
+/**
  * To initalise click events.
  * @see {@link click#init}
  */
