@@ -236,3 +236,19 @@ export default {
 	getValueFromUrl: getValueFromUrl,
 	getValueFromJsVariable: getValueFromJsVariable
 };
+export {
+	log: log,
+	is: is,
+	isUndefined: is,
+	merge: merge,
+	encode: encode,
+	decode: decode,
+	guid: cuid,
+	addEvent: addEvent,
+	broadcast: broadcast,
+	onPage: onPage,
+	triggerPage: triggerPage,
+	getValueFromCookie: getValueFromCookie,
+	getValueFromUrl: getValueFromUrl,
+	getValueFromJsVariable: getValueFromJsVariable
+};
