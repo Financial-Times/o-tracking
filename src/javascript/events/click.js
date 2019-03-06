@@ -236,5 +236,9 @@ const init = (category, elementsToTrack) => {
 };
 
 export default {
-	init: init
+	init
+};
+
+export {
+	init
 };
