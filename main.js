@@ -5,12 +5,13 @@ const settings = require('./src/javascript/core/settings');
 const user = require('./src/javascript/core/user');
 const session = require('./src/javascript/core/session');
 const send = require('./src/javascript/core/send');
+const core = require('./src/javascript/core');
 
 /**
  * The version of the tracking module.
  * @type {string}
  */
-const version = '1.4.1';
+const version = '1.4.2';
 /**
  * The source of this event.
  * @type {string}
@@ -84,6 +85,12 @@ Tracking.prototype.event = require('./src/javascript/events/custom');
 Tracking.prototype.page = require('./src/javascript/events/page-view');
 
 /**
+* To initalise view events for components/elements.
+* @see {@link view#init}
+*/
+Tracking.prototype.view = require('./src/javascript/events/component-view');
+
+/**
  * To initalise click events.
  * @see {@link click#init}
  */
@@ -100,6 +107,12 @@ Tracking.prototype.link = { init: _ => Tracking.prototype.click.init('link') }; 
  * @see {@link utils}
  */
 Tracking.prototype.utils = require('./src/javascript/utils');
+
+/**
+ * Get the rootID.
+ * @see {@link utils}
+ */
+Tracking.prototype.getRootID = core.getRootID;
 
 /**
  * Initialises the Tracking object.
