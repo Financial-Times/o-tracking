@@ -140,7 +140,9 @@ function broadcast(namespace, eventType, detail) {
 			detail: detail,
 			bubbles: true
 		}));
-	} catch (error) {}
+	} catch (error) {
+		// empty
+	}
 }
 
 /**
@@ -238,13 +240,14 @@ function sanitise (str) {
  * Assign the subject value if the target properties are undefined
  * @param {Object} subject - assign the value
  * @param {Object} target - be assigned the value
- * @return
+ * @return {void}
  */
 function assignIfUndefined (subject, target) {
 	for (const prop in subject) {
 		if (!target[prop]) {
 			target[prop] = subject[prop];
 		} else {
+			// eslint-disable-next-line no-console
 			console.warn(`You can't set a custom property called ${prop}`);
 		}
 	}

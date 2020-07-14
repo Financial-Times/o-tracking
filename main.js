@@ -13,7 +13,7 @@ import componentView from './src/javascript/events/component-view';
  * The version of the tracking module.
  * @type {string}
  */
-const version = '2.0.0';
+const version = '2.0.10';
 /**
  * The source of this event.
  * @type {string}
@@ -254,7 +254,7 @@ Tracking.prototype._getDeclarativeConfig = function(options) {
 	}
 
 	for (const property in declarativeOptions) {
-		if (declarativeOptions.hasOwnProperty(property)) {
+		if (Object.prototype.hasOwnProperty.call(declarativeOptions, property)) {
 			options[property] = options[property] || declarativeOptions[property];
 		}
 	}
