@@ -1,5 +1,4 @@
 import utils from '../utils';
-import isCircular from 'is-circular';
 
 /**
  * Class for storing data
@@ -179,7 +178,7 @@ Store.prototype.write = function (data) {
 	if (typeof this.data === 'string') {
 		value = this.data;
 	} else {
-		if (isCircular(this.data)) {
+		if (utils.containsCircularPaths(this.data)) {
 			const errorMessage = "o-tracking does not support circular references in the analytics data.\n" +
 			"Please remove the circular references in the data.\n" +
 			"Here are the paths in the data which are circular:\n" +

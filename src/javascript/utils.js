@@ -299,6 +299,54 @@ function findCircularPathsIn(rootObject) {
 }
 
 /**
+ * Used to find out whether an object contains a circular reference.
+ * @param {*} rootObject The object we want to search within for circular references
+ * @returns {bool} Returns true if a circular reference was found, otherwise returns false
+ */
+function containsCircularPaths(rootObject) {
+	// Used to keep track of all the values the rootObject contains
+	const traversedValues = new WeakSet();
+
+	/**
+	 *
+	 * @param {*} currentObject The current object we want to search within for circular references
+	 * @returns {true|undefined} Returns true if a circular reference was found, otherwise returns undefined
+	 */
+	function _containsCircularPaths(currentObject) {
+		// If we already saw this object
+		// the rootObject contains a circular reference
+		// and we can stop looking any further
+		if (traversedValues.has(currentObject)) {
+			return true;
+		}
+
+		// Only Objects and things which inherit from Objects can contain circular references
+		// I.E. string/number/boolean/template literals can not contain circular references
+		if (currentObject instanceof Object) {
+			traversedValues.add(currentObject);
+			// Loop through all the values of the current object and search those for circular references
+			for (const value of Object.values(currentObject)) {
+				// No need to recurse on every value because only things which inherit
+				// from Objects can contain circular references
+				if (value instanceof Object) {
+					if (_containsCircularPaths(value)) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	// _containsCircularPaths returns true or undefined.
+	// By using Boolean we convert the undefined into false.
+	return Boolean(
+		_containsCircularPaths(
+			rootObject
+		)
+	);
+}
+
+/**
  * Utilities.
  * @alias utils
  */
@@ -320,7 +368,8 @@ export default {
 	sanitise,
 	assignIfUndefined,
 	whitelistProps,
-	findCircularPathsIn
+	findCircularPathsIn,
+	containsCircularPaths
 };
 export {
 	log,
@@ -340,5 +389,6 @@ export {
 	sanitise,
 	assignIfUndefined,
 	whitelistProps,
-	findCircularPathsIn
+	findCircularPathsIn,
+	containsCircularPaths
 };

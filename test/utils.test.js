@@ -152,4 +152,38 @@ describe('Utils', function () {
 			]);
 		});
 	});
+
+	describe('containsCircularPaths', function() {
+		it('should return false if object contains no circular references', function() {
+			proclaim.isFalse(Utils.containsCircularPaths({ a: 1, b: 2 }));
+		});
+
+		it('should return false if given a string literal', function() {
+			proclaim.isFalse(Utils.containsCircularPaths(''));
+		});
+
+		it('should return false if given a number literal', function() {
+			proclaim.isFalse(Utils.containsCircularPaths(137));
+		});
+
+		it('should return false if given a boolean literal', function() {
+			proclaim.isFalse(Utils.containsCircularPaths(true));
+		});
+
+		it('should return false if given null', function() {
+			proclaim.isFalse(Utils.containsCircularPaths(null));
+		});
+
+		it('should return true if given an object which contains circular references', function() {
+			const rootObject = {};
+			rootObject.a = rootObject;
+			rootObject.b = 2;
+			rootObject.c = '';
+			rootObject.d = null;
+			rootObject.e = true;
+			rootObject.f = [rootObject.a, 'carrot', rootObject];
+			rootObject.f.push(rootObject.f);
+			proclaim.isTrue(Utils.containsCircularPaths(rootObject));
+		});
+	});
 });
