@@ -114,4 +114,42 @@ describe('Utils', function () {
 		});
 	});
 
+	describe('findCircularPathsIn', function() {
+		it('should return an empty array if object contains no circular references', function() {
+			proclaim.deepStrictEqual(Utils.findCircularPathsIn({ a: 1, b: 2 }), []);
+		});
+
+		it('should return an empty array if given a string literal', function() {
+			proclaim.deepStrictEqual(Utils.findCircularPathsIn(''), []);
+		});
+
+		it('should return an empty array if given a number literal', function() {
+			proclaim.deepStrictEqual(Utils.findCircularPathsIn(137), []);
+		});
+
+		it('should return an empty array if given a boolean literal', function() {
+			proclaim.deepStrictEqual(Utils.findCircularPathsIn(true), []);
+		});
+
+		it('should return an empty array if given null', function() {
+			proclaim.deepStrictEqual(Utils.findCircularPathsIn(null), []);
+		});
+
+		it('should return an array containing all the paths which are circular', function() {
+			const rootObject = {};
+			rootObject.a = rootObject;
+			rootObject.b = 2;
+			rootObject.c = '';
+			rootObject.d = null;
+			rootObject.e = true;
+			rootObject.f = [rootObject.a, 'carrot', rootObject];
+			rootObject.f.push(rootObject.f);
+			proclaim.deepStrictEqual(Utils.findCircularPathsIn(rootObject), [
+				'.a',
+				'.f[0]',
+				'.f[2]',
+				'.f[3]'
+			]);
+		});
+	});
 });

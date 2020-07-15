@@ -254,6 +254,51 @@ function assignIfUndefined (subject, target) {
 }
 
 /**
+ * Used to find out all the paths which contain a circular reference.
+ * @param {*} rootObject The object we want to search within for circular references
+ * @returns {string[]} Returns an array of strings, the strings are the full paths to the circular references within the rootObject
+ */
+function findCircularPathsIn(rootObject) {
+	const traversedValues = new WeakSet();
+	const circularPaths = [];
+
+	function _findCircularPathsIn(currentObject, path) {
+		// If we already saw this object
+		// the rootObject contains a circular reference
+		// and we can stop looking any further into this currentObj
+		if (traversedValues.has(currentObject)) {
+			circularPaths.push(path);
+			return;
+		}
+
+		// Only Objects and things which inherit from Objects can contain circular references
+		// I.E. string/number/boolean/template literals can not contain circular references
+		if (currentObject instanceof Object) {
+			traversedValues.add(currentObject);
+
+			// Loop through all the values of the current object and search those for circular references
+			for (const [key, value] of Object.entries(currentObject)) {
+				// No need to recurse on every value because only things which inherit
+				// from Objects can contain circular references
+				if (value instanceof Object) {
+					const parentObjectIsAnArray = Array.isArray(currentObject);
+					if (parentObjectIsAnArray) {
+					// Store path in bracket notation when value is an array
+						_findCircularPathsIn(value, `${path}[${key}]`);
+					} else {
+					// Store path in dot-notation when value is an object
+						_findCircularPathsIn(value, `${path}.${key}`);
+					}
+				}
+			}
+		}
+	}
+
+	_findCircularPathsIn(rootObject, "");
+	return circularPaths;
+}
+
+/**
  * Utilities.
  * @alias utils
  */
@@ -274,7 +319,8 @@ export default {
 	getValueFromJsVariable,
 	sanitise,
 	assignIfUndefined,
-	whitelistProps
+	whitelistProps,
+	findCircularPathsIn
 };
 export {
 	log,
@@ -293,5 +339,6 @@ export {
 	getValueFromJsVariable,
 	sanitise,
 	assignIfUndefined,
-	whitelistProps
+	whitelistProps,
+	findCircularPathsIn
 };

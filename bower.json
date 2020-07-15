@@ -11,6 +11,7 @@
   ],
   "description": "Origami module for FT tracking.",
   "dependencies": {
-    "ftdomdelegate": "^4.0.0"
+    "ftdomdelegate": "^4.0.0",
+    "is-circular": "tjmehta/is-circular#^1.0.2"
   }
 }
