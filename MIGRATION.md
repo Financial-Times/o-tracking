@@ -19,6 +19,8 @@ The `api_key` configuration settings has been removed, it is no longer required 
 +tracking.click.init();
 ```
 
+Removed the deprecated `user.passport_id` from the data being tracked.
+
 ## Migrating from v1 to v2
 
 o-tracking v2 has dropped support for ftdomdelegate v3, please ensure your project is not using ftdomdelegate v3 and can work with ftdomdelegate v4.
