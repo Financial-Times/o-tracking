@@ -1,8 +1,7 @@
 # Origami Tracking component
 
-Include in your product to send tracking requests to the Spoor API.
+Include in your product to send tracking requests to the [Spoor API](https://spoor-docs.herokuapp.com/).
 
-- [The spoor ecosystem](#the-spoor-ecosystem)
 - [Usage](#usage)
 - [Events](#events)
 - [Parameters](#parameters)
@@ -10,286 +9,201 @@ Include in your product to send tracking requests to the Spoor API.
 - [Contact](#contact)
 - [Licence](#licence)
 
-## The Spoor ecosystem
-![ScreenShot](https://rawgit.com/Financial-Times/o-tracking/master/resources/images/ngda-system-design.svg)
-
-[Spoor API docs](https://spoor-docs.herokuapp.com/)
-
 ## Usage
 
-### Requirement: Polyfills & Doesn't cut the mustard
-_Applies to both quickstart examples below_
+### Tracking without JavaScript
 
+o-tracking does not work without JavaScript but, you can still send basic tracking requests to the Spoor API by setting a css background image url which points to the Spoor tracking pixel endpoint (`https://spoor-api.ft.com/px.gif`). Click events and other interactive events will not be tracked without JavaScript but basic page view events can be tracked.
 
-Add the [polyfill](https://cdn.polyfill.io/) service to your site to make sure o-tracking runs in as many browsers as possible.
+The Spoor tracking pixel endpoint takes a `data` query parameter which is a url-encoded JSON string that represents the data to track in Spoor.
 
-Require the noscript version of o-tracking incase the browser doesn't cut the mustard.
-
-Checkout the [Origami spec](http://origami.ft.com/docs/developer-guide/using-modules/#core-vs-enhanced-experience) for the correct CTM logic, [html and css changes](http://origami.ft.com/docs/developer-guide/using-modules/#styles-for-fallbacks-and-enhancements) needed.
-
-
-
-o-tracking should have the following piece of html added, with the correct server and data filled in.
 ```html
 <div class="o-tracking o--if-no-js" data-o-component="o-tracking">
-	<div style="background:url('http://server?data={}');"></div>
+	<div style="background: url('https://spoor-api.ft.com/px.gif?data=YOUR_URL_ENCODED_JSON_DATA_HERE');"></div>
 </div>
 ```
 
-### Recommended implementation using the build service
+For example, if you have the following data you want to track in Spoor:
 
-Use an onload handler to check when o-tracking has loaded and then init.
-
-```js
-// CTM
-if (cutsTheMustard) {
-    var o = document.createElement('script');
-    o.async = o.defer = true;
-    o.src = 'https://build.origami.ft.com/v2/bundles/js?modules=o-tracking';
-    var s = document.getElementsByTagName('script')[0];
-    if (o.hasOwnProperty('onreadystatechange')) {
-        o.onreadystatechange = function() {
-            if (o.readyState === "loaded") {
-                oTrackinginit();
-            }
-        };
-    } else {
-        o.onload = oTrackinginit;
+```json
+{
+  "category": "page",
+  "action": "view",
+  "system": {
+    "apiKey": "qUb9maKfKbtpRsdp0p2J7uWxRPGJEP",
+    "source": "o-tracking",
+    "version": "1.0.0"
+  },
+  "context": {
+    "product": "ft.com",
+    "content": {
+      "asset_type": "page"
     }
-    s.parentNode.insertBefore(o, s);
+  }
 }
 ```
-
-The `oTrackinginit` function, used above, would have function calls to setup o-tracking and likely send a page view event. e.g.
-
-```js
-function oTrackinginit() {
-    var oTracking = Origami['o-tracking'];
-    // Setup
-    oTracking.init({...config...});
-    // Page
-    oTracking.page({...config...});
-    // Clicks.
-    oTracking.click.init(category);
-    // Components/Elements views.
-    oTracking.view.init({...opts...});
-}
+Here is the corresponding tracking pixel setup:
+```html
+<div class="o-tracking o--if-no-js" data-o-component="o-tracking">
+    <div style="background: url('https://spoor-api.ft.com/px.gif?data=%7B%22category%22:%22page%22,%20%22action%22:%22view%22,%20%22system%22:%7B%22apiKey%22:%22qUb9maKfKbtpRsdp0p2J7uWxRPGJEP%22,%22source%22:%22o-tracking%22,%22version%22:%221.0.0%22%7D,%22context%22:%7B%22product%22:%22ft.com%22,%22content%22:%7B%22asset_type%22:%22page%22%7D%7D%7D');"></div>
+</div>
 ```
 
-### Alternative implementation using require
+### Tracking with JavaScript
 
-Use the build service or require locally to load o-tracking and init manually.
-```js
+#### Methods
+
+##### oTracking.init
+
+To manually instantiate `o-tracking`, import the component and call the `init` method with configuration which is specific to your product:
+
+``` js
 import oTracking from 'o-tracking';
+
+const config = {
+    context: {
+        // This value is used as a way to identify the high-level product, for example: ft.com, FT app, biz-ops etc.
+        product: 'o-tracking-example',
+    }
+};
+oTracking.init(config);
 ```
+
+##### oTracking.page
+
+To track a page view for the product you call the `oTracking.page` method.
+Page events automatically track the url and the referrer.
+Please refer to the [event document](docs/event.md) for information about all the possible properties which can be set.
+```js
+const pageConfig = {
+  content: {
+      /*
+        Asset type is meant to describe the main purpose of the page
+        The value can be one of these:
+        - `story` - A story or article
+        - `blog` - A blog post
+        - `front` - A home page or front page
+        - `ad` - An advert.
+        - `image` - An image
+        - `interactive` - An interactive graphic
+        - `report` - A special report
+        - `search` - A search results page
+        - `section` - A section or listing page
+        - `topic` -  A topic landing page
+        - `video` - A video page
+        - `login` - Any login/sign-in page
+        - `stream` - A stream page
+        - `funnel` - Any funnel page
+        - `epaper` - all epaper pages
+        - `rankings` - A rankings page for schools and courses (i.e. on rankings.ft.com). Not the section's hub page
+        - `markets` - Any market, bond, commoditity, stock, currency 'tearsheet' (usually has "/tearsheet/" in URL)
+        - `myft` - All MyFT pages
+        - `account` - All account pages
+        - `membership` - All membership pages
+        - `page` - anything else, not above.
+    */
+    asset_type: "story"
+  }
+};
+oTracking.page(pageConfig);
+```
+
+##### oTracking.click.init
+
+Call the `oTracking.click.init` method to track click events. Pass the category you would like the click events to have as an argument:
+
+- If the element being clicked is a link which goes to a page on the same domain as the current page, o-tracking will put the tracking data into a queue to send to Spoor at a later time.
+- Add the attribute `data-o-tracking-skip-queue` to the element to send the data to Spoor immediately.
+- O-tracking click events will also track the path from the root of the DOM tree to the element which was clicked. This is recorded in a property called `domPathTokens`.
+- If the clicked element has the `data-trackable` attribute set, sibling elements will also be included within the `domPathTokens` property.
+
+Please refer to the [event document](docs/event.md) for information about all the possible properties which can be set.
+```js
+// Tracking a click
+const category = 'element';
+oTracking.click.init(category);
+```
+
+##### oTracking.view.init
+
+To track when an element has come into view of the user, add the attribute `data-o-tracking-view` to the element in the page and then call the `oTracking.view.init` method:
+
+- By default, elements with the `data-o-tracking-view` attribute are tracked.
+- To track different elements, set the `selector` option property to a CSS selector.
+- Like click events, view events will also track the path from the root of the DOM tree to the element which triggered the tracking event into a property called `domPathTokens`.
+- To categorise the view events, set the `category` option property.
+- To collect extra data to send with the tracking event, add a function named `getContextData` to the options. The function receives as it's single argument the element which triggered the tracking event and needs to return an object with any of these optional properties set:
+	- `componentContentId`
+	- `type`
+	- `subtype`
+	- `component`
+_Note:_ This feature requires `window.IntersectionObserver` in order to track the events
+_Note:_ `getContextData` should be a function which returns `{Object}`. It accepts the viewed element as an argument
+
+Please refer to the [event document](docs/event.md) for information about all the possible properties which can be set.
 
 ```js
-if (cutsTheMustard) {
-    // Setup
-    oTracking.init({...config...});
-    // Page
-    oTracking.page({...config...});
-    // Clicks
-    oTracking.click.init(category);
-    // Components/Elements views.
-    oTracking.view.init({...opts...});
-}
+const opts = {
+    category: 'audio', // default: 'component'
+    selector: '.o-teaser__audio', // default: '[data-o-tracking-view]'
+    getContextData: (el) => {  // default: null
+        return {
+            componentContentId: el.getAttribute('data-id'),
+            type: 'audio',
+            subtype: 'podcast',
+            component: 'teaser'
+        };
+    }
+};
+
+oTracking.view.init(opts);
 ```
 
-### Example implementations
+##### oTracking.event
+
+To track a custom event call the `oTracking.event` method:
+```js
+const eventConfig = {
+    "category": "video",
+    "action": "play",
+};
+oTracking.event(eventConfig);
+```
+Please refer to the [event document](docs/event.md) for information about all the possible properties which can be set.
+
+
+#### Events
+
+Instead of calling the `page` and `event` methods `o-tracking` can be configured to fire events based on the custom DOM Events `oTracking.page` and `oTracking.event`.
+
+##### oTracking.page
+
+Call the `oTracking.page.init()` method to listen for `oTracking.page` events:
+```js
+// Tell o-tracking to listen for `oTracking.page` events
+oTracking.page.init();
+
+// Now we can send page events and o-tracking will track the data within them.
+const pageData = { content: { uuid: 'abc-123', barrier: 'PREMIUM' };
+document.body.dispatchEvent(new CustomEvent('oTracking.page', { detail: pageData}, bubbles: true}));
+```
+
+##### oTracking.event
+
+To make o-tracking listen for `oTracking.event` events, you call `oTracking.event.init()`:
+```js
+// Tell o-tracking to listen for `oTracking.event` events
+oTracking.event.init();
+
+// Now we can send custom events and o-tracking will track the data within them.
+const customData = { category: 'video', action: 'play', id: '512346789', pos: '10' };
+document.body.dispatchEvent(new CustomEvent('oTracking.event', { detail: customData}, bubbles: true}));
+```
+
+## Example implementations
 
 - [ft.com](docs/ftcom_example.md)
 - [membership](docs/membership_example.md)
-
-#### Full example
-```html
-<!DOCTYPE html>
-<!-- Add core class to head tag -->
-<head class="core">
-<head>
-    <title>Full example</title>
-    <!-- Add CTM styles -->
-    <style type="text/css">
-        /* Hide any enhanced experience content when in core mode, and vice versa. */
-        .core .o--if-js,
-        .enhanced .o--if-no-js { display: none !important; }
-    </style>
-    <!-- Add CTM check -->
-    <script>
-        var cutsTheMustard = ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window);
-        if (cutsTheMustard) {
-        // Swap the 'core' class on the HTML element for an 'enhanced' one
-        // We're doing it early in the head to avoid a flash of unstyled content
-        document.documentElement.className = document.documentElement.className.replace(/\bcore\b/g, 'enhanced');
-        }
-    </script>
-    <!-- Add Polyfil service -->
-    <script src="https://cdn.polyfill.io/v1/polyfill.min.js"></script>
-    <!-- INIT and make a page request -->
-    <script>
-        function oTrackinginit() {
-            // oTracking
-            var oTracking = Origami['o-tracking'];
-            var config_data = {
-                server: 'https://spoor-api.ft.com/px.gif',
-                context: {
-                    product: 'ft.com'
-                },
-                user: {
-                    ft_session: oTracking.utils.getValueFromCookie(/FTSession=([^;]+)/)
-                }
-            }
-            // Setup
-            oTracking.init(config_data);
-            // Page
-            oTracking.page({
-                content: {
-                    asset_type: 'page'
-                }
-            });
-        }
-        if (cutsTheMustard) {
-            var o = document.createElement('script');
-            o.async = o.defer = true;
-            o.src = 'https://build.origami.ft.com/v2/bundles/js?modules=o-tracking';
-            var s = document.getElementsByTagName('script')[0];
-            if (o.hasOwnProperty('onreadystatechange')) {
-                o.onreadystatechange = function() {
-                    if (o.readyState === "loaded") {
-                        oTrackinginit();
-                    }
-                };
-            } else {
-                o.onload = oTrackinginit;
-            }
-            s.parentNode.insertBefore(o, s);
-        }
-    </script>
-</head>
-<body>
-<!-- Add fallback if browsers don't cut the mustard -->
-<div class="o-tracking o--if-no-js" data-o-component="o-tracking">
-    <div style="background:url('https://spoor-api.ft.com/px.gif?data=%7B%22category%22:%22page%22,%20%22action%22:%22view%22,%20%22system%22:%7B%22source%22:%22o-tracking%22,%22version%22:%221.0.0%22%7D,%22context%22:%7B%22product%22:%22ft.com%22,%22content%22:%7B%22asset_type%22:%22page%22%7D%7D%7D');"></div>
-</div>
-<!-- Send an event -->
-<button onclick="document.body.dispatchEvent(new CustomEvent('oTracking.event', { detail: { category: 'element', action: 'click' }, bubbles: true}));">Send an event</button>
-</body>
-</html>
-```
-
-## Events
-
-`o-tracking` captures events automatically when initialised with the methods [outlined above](#useage). In addition, `o-tracking` will capture custom `oTracking.page` and `oTracking.event` events:
-
-- `oTracking.page`
-
-    Send a page view event
-
-    ```js
-    document.body.dispatchEvent(new CustomEvent('oTracking.page', { detail: { content: { uuid: 'abc-123', barrier: 'PREMIUM' }}, bubbles: true}));
-    ```
-- `oTracking.event`
-
-    Send a normal event
-
-    ```js
-    document.body.dispatchEvent(new CustomEvent('oTracking.event', { detail: { category: 'video', action: 'play', id: '512346789', pos: '10' }, bubbles: true}));
-    ```
-
-## Parameters
-
-o-tracking will
-* Automatically pickup ftsession from cookies for you.
-* Page events automatically pick up the url and the referrer.
-* Click events [initalised as above](#usage), will populate a `domPathTokens` property. If the clicked element has the `data-trackable` attribute, sibling elements will also be included within `domPathTokens`.
-* View events are fired for elements with the `data-o-tracking-view` attribute by default, unless `o-tracking`'s `selector` option is configured. Like click events, view events populate a `domPathTokens` property. To collect data for events, set the `category` option, or provide a callback[`getContextData`]
-_Note:_ This feature requires `window.IntersectionObserver` in order to track the events
-_Note:_ `getContextData` should be a function which returns `{Object}`. It accepts the viewed element as an argument
-	```js
-	const opts = {
-		category: 'audio', // default: 'component'
-		selector: '.o-teaser__audio', // default: '[data-o-tracking-view]'
-		getContextData: (el) => {  // default: null
-			return {
-				componentContentId: el.getAttribute('data-id'),
-				type: 'audio',
-				subtype: 'podcast',
-			 	component: 'teaser'
-			};
-		}
-	}
-
-	oTracking.view.init(opts);
-	```
-
-Events are decorated with config values you pass in via `init()` or `updateConfig()` if they are part of `context`, `user`, or `device` objects. Values passed in as `context` to individual events will override context values from init.
-
-### Init
-```js
-{
-    server: "...",
-    context: {
-        product: "..."
-    },
-    user: {
-        ft_session: "..."
-    },
-    device: {
-        orientation: "..."
-    }
-}
-```
-
-### Updating core configuration
-```js
-{
-    device: {
-        orientation: "..."
-    }
-}
-```
-
-### Page
-```js
-{
-    url: "...",
-    referrer: "..."
-    content: {
-        uuid: "...",
-        hurdle: "..."
-    }
-    ... any other key-values ...
-}
-```
-
-### Event
-
-__Important__: To decide how to name the category and action fields, consider this sentence (square brackets denote that part is optional):
-
-#### A user can {action} a {category}[ with/having a {context}[ to {destination}]]
-
-For example:
-* A user can view a page having a uuid.
-* A user can play a video having a video ID.
-* A user can share a comment having a comment ID to Facebook.
-* A user can share an article having a uuid to email.
-* A user can scroll a page with a asset type.
-* A user can open an email.
-* A user can click an element.
-
-```js
-{
-    category: 'video',
-    action: 'play',
-    ... any other key-values ...
-    id: '512346789',
-    pos: '10'
-}
-```
-
-[Look at all the properties](docs/event.md) available for an event.
-
-[JSDoc](https://registry.origami.ft.com/components/o-tracking/jsdoc#Tracking)
 
 
 ## Migration Guide
