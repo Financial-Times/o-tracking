@@ -11,6 +11,8 @@ The method `whitelistProps` has been renamed to `filterProperties`.
 +Tracking.prototype.utils.filterProperties
 ```
 
+The methods `setDomain` and `getDomain` have been removed, o-tracking only works with the spoor domain, which is set automatically. 
+
 ## Migrating from v1 to v2
 
 o-tracking v2 has dropped support for ftdomdelegate v3, please ensure your project is not using ftdomdelegate v3 and can work with ftdomdelegate v4.
