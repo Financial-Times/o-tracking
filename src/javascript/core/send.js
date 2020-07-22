@@ -39,7 +39,6 @@ function sendRequest(request, callback) {
 
 	const core_system = settings.get('config') && settings.get('config').system || {};
 	const system = utils.merge(core_system, {
-		api_key: settings.get('api_key'), // String - API key - Make sure the request is from a valid client (idea nicked from Keen.io) useful if a page gets copied onto a Russian website and creates noise
 		version: settings.get('version'), // Version of the tracking client e.g. '1.2'
 		source: settings.get('source'), // Source of the tracking client e.g. 'o-tracking'
 		transport: transport.name, // The transport method used.
@@ -196,8 +195,8 @@ function addAndRun(request) {
 }
 
 /**
- * Init the queue and send any leftover events.
- * @return {undefined}
+ * Init a queue and send any leftover events.
+ * @return {Queue} An initialised queue.
  */
 function init() {
 	queue = new Queue('requests');

@@ -19,11 +19,6 @@ const version = '2.0.10';
  * @type {string}
  */
 const source = 'o-tracking';
-/**
- * The API key.
- * @type {string}
- */
-const api_key = 'qUb9maKfKbtpRsdp0p2J7uWxRPGJEP';
 
 /**
  * @class Tracking
@@ -31,7 +26,6 @@ const api_key = 'qUb9maKfKbtpRsdp0p2J7uWxRPGJEP';
 function Tracking() {
 	this.version = version;
 	this.source = source;
-	this.api_key = api_key;
 
 	/**
 	 * The initialised state of the object.
@@ -162,7 +156,6 @@ Tracking.prototype.init = function(config) {
 
 	settings.set('version', this.version);
 	settings.set('source', this.source);
-	settings.set('api_key', this.api_key);
 
 	settings.set('page_sent', false);
 
@@ -214,9 +207,9 @@ Tracking.prototype.updateConfig = function(newConfig) {
 };
 
 /**
- * Checks if the <script type='application/json' data-o-tracking-config> element is in the DOM
+ * Retrieves the <script type='application/json' data-o-tracking-config> element that is in the DOM, otherwise returns null.
  * @private
- * @return {HTMLElement} - Returns the <script> element if found
+ * @return {HTMLElement|null} - Returns the <script> element if found otherwise returns null.
  */
 Tracking.prototype._getDeclarativeConfigElement = function() {
 	return document.querySelector('script[data-o-tracking-config]');

@@ -4,14 +4,14 @@
 ## Migrating from v2 to v3
 
 The method `whitelistProps` has been renamed to `filterProperties`.
-
-
 ```diff
 -Tracking.prototype.utils.whitelistProps
 +Tracking.prototype.utils.filterProperties
 ```
 
-The methods `setDomain` and `getDomain` have been removed, o-tracking only works with the spoor domain, which is set automatically. 
+The methods `setDomain` and `getDomain` have been removed, o-tracking only works with the spoor domain, which is set automatically.
+
+The `api_key` configuration settings has been removed, it is no longer required as it is not used by Spoor or o-tracking in anyway.
 
 ## Migrating from v1 to v2
 
