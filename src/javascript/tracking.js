@@ -10,22 +10,20 @@ import core from './src/javascript/core';
 import componentView from './src/javascript/events/component-view';
 
 /**
- * The version of the tracking module.
- * @type {string}
- */
-const version = '2.0.10';
-/**
- * The source of this event.
- * @type {string}
- */
-const source = 'o-tracking';
-
-/**
  * @class Tracking
  */
 function Tracking() {
-	this.version = version;
-	this.source = source;
+	/**
+	 * The version of the tracking module.
+	 * @type {string}
+	 */
+	this.version = '2.0.10';
+
+	/**
+	 * The source of this event.
+	 * @type {string}
+	 */
+	this.source = 'o-tracking';
 
 	/**
 	 * The initialised state of the object.
@@ -65,7 +63,7 @@ Tracking.prototype.destroy = function() {
  * @return {string} The module's version.
  */
 Tracking.prototype.toString = function() {
-	return 'oTracking version ' + version;
+	return 'oTracking version ' + this.version;
 };
 
 /**
