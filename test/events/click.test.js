@@ -7,7 +7,7 @@ import Queue from '../../src/javascript/core/queue';
 import settings from '../../src/javascript/core/settings';
 import send from '../../src/javascript/core/send';
 import core from '../../src/javascript/core';
-import click from '../../src/javascript/events/click';
+import {init as click} from '../../src/javascript/events/click';
 import session from '../../src/javascript/core/session';
 
 describe('click', function () {
@@ -37,7 +37,7 @@ describe('click', function () {
 
 		sinon.spy(core, 'track');
 
-		click.init("blah", '#anchorA');
+		click("blah", '#anchorA');
 
 		const aLinkToGoogle = document.createElement('a');
 
@@ -73,7 +73,7 @@ describe('click', function () {
 
 		sinon.spy(core, 'track');
 
-		click.init("blah", '#anchorB');
+		click("blah", '#anchorB');
 
 		const aLinkToGoogle = document.createElement('a');
 
@@ -108,7 +108,7 @@ describe('click', function () {
 
 		sinon.spy(core, 'track');
 
-		click.init("blah", '#anchorC');
+		click("blah", '#anchorC');
 
 		const aLinkToSecuredrop = document.createElement('a');
 
@@ -144,9 +144,9 @@ describe('click', function () {
 	it('should not track straight away when the link points to the same domain we are currently on', function (done) {
 		sinon.spy(core, 'track');
 
-		click.init("blah", '#anchorD');
+		click("blah", '#anchorD');
 
-		core.track.resetHistory(); // click.init() makes a call to core.track() so clearing the history here to avoid false positives
+		core.track.resetHistory(); // click() makes a call to core.track() so clearing the history here to avoid false positives
 
 		const aLinkToPageOnSameDomain = document.createElement('a');
 		const currentHost = window.document.location.hostname;
@@ -181,9 +181,9 @@ describe('click', function () {
 	it('should skip the queue when data-o-tracking-skip-queue is "true" on the link', function (done) {
 		sinon.spy(core, 'track');
 
-		click.init("blah", '#anchorE');
+		click("blah", '#anchorE');
 
-		core.track.resetHistory(); // click.init() makes a call to core.track() so clearing the history here to avoid false positives
+		core.track.resetHistory(); // click() makes a call to core.track() so clearing the history here to avoid false positives
 
 		const aLinkToPageOnSameDomain = document.createElement('a');
 		const currentHost = window.document.location.hostname;
