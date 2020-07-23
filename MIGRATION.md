@@ -11,10 +11,10 @@ The `api_key` configuration settings has been removed, it is no longer required 
 
 The deprecated `user.passport_id` data property has been removed.
 
-`tracking.link` has been removed, it's replacement is `tracking.click`.
+`tracking.link.init` has been removed, it's replacement is `tracking.click`.
 ```diff
 -tracking.link.init();
-+tracking.click.init();
++tracking.click();
 ```
 
 The export interface now only has a single default export. All the named exports have been removed.

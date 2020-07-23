@@ -107,9 +107,9 @@ const pageConfig = {
 oTracking.page(pageConfig);
 ```
 
-##### oTracking.click.init
+##### oTracking.click
 
-Call the `oTracking.click.init` method to track click events. Pass the category you would like the click events to have as an argument:
+Call the `oTracking.click` method to track click events. Pass the category you would like the click events to have as an argument:
 
 - If the element being clicked is a link which goes to a page on the same domain as the current page, o-tracking will put the tracking data into a queue to send to Spoor at a later time.
 - Add the attribute `data-o-tracking-skip-queue` to the element to send the data to Spoor immediately.
@@ -120,7 +120,7 @@ Please refer to the [event document](docs/event.md) for information about all th
 ```js
 // Tracking a click
 const category = 'element';
-oTracking.click.init(category);
+oTracking.click(category);
 ```
 
 ##### oTracking.view.init

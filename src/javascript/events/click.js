@@ -115,10 +115,6 @@ const init = (category, elementsToTrack) => {
 	onPage(runQueue);
 };
 
-export default {
-	init
-};
-
 export {
 	init
 };

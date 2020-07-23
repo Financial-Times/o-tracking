@@ -4,7 +4,7 @@ import session from './core/session';
 import send from './core/send';
 import event from './events/custom';
 import page from './events/page-view';
-import click from './events/click';
+import {init as click} from './events/click';
 import core from './core';
 import { merge, broadcast } from './utils';
 import componentView from './events/component-view';
@@ -213,6 +213,19 @@ class Tracking {
 
 		return options;
 	}
+
+
+	/**
+	 * Listen for click events.
+	 *
+	 * @param {String} category - The event category for clicks.
+	 * @param {String} elementsToTrack - A CSS selector string to select elements to track clicks on.
+	 * @return {void}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	click(category, elementsToTrack) {
+		click(category, elementsToTrack);
+	}
 }
 /**
  * Track a custom event.
@@ -231,12 +244,6 @@ Tracking.prototype.page = page;
  * @see {@link view#init}
  */
 Tracking.prototype.view = componentView;
-
-/**
- * To initalise click events.
- * @see {@link click#init}
- */
-Tracking.prototype.click = click;
 
 /**
  * Get the rootID.
