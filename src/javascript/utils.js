@@ -307,29 +307,6 @@ function containsCircularPaths(rootObject) {
 	);
 }
 
-/**
- * Utilities.
- * @alias utils
- */
-export default {
-	log,
-	is,
-	isUndefined: is,
-	merge,
-	encode,
-	decode,
-	guid: cuid,
-	addEvent,
-	broadcast,
-	onPage,
-	triggerPage,
-	getValueFromCookie,
-	sanitise,
-	assignIfUndefined,
-	filterProperties,
-	findCircularPathsIn,
-	containsCircularPaths
-};
 export {
 	log,
 	is,

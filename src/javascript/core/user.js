@@ -1,4 +1,4 @@
-import utils from '../utils';
+import { guid } from '../utils';
 import Store from './store';
 
 let userID;
@@ -45,7 +45,7 @@ function setUser(id) {
 	userID = id;
 
 	if (!userID) {
-		userID = utils.guid();
+		userID = guid();
 	}
 
 	store.write(userID); // Refreshes the cookie...

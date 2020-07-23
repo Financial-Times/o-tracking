@@ -1,4 +1,4 @@
-import utils from '../utils';
+import { guid, is, isUndefined, merge } from '../utils';
 import Store from './store';
 
 /**
@@ -52,7 +52,7 @@ function getSession() {
 
 	// No active session, gen a new one.
 	if (!session) {
-		session = utils.guid();
+		session = guid();
 		isNew = true;
 	}
 
@@ -72,15 +72,15 @@ function getSession() {
  * @return {Session} - The session
  */
 function init(config) {
-	if (utils.is(config, 'string')) {
+	if (is(config, 'string')) {
 		config = { name: config };
 	}
 
-	if (utils.isUndefined(config)) {
+	if (isUndefined(config)) {
 		config = {};
 	}
 
-	const c = utils.merge(defaultSessionConfig, config);
+	const c = merge(defaultSessionConfig, config);
 
 	// config.name is important here, means the user has specifically asked for a cookie name.
 	if (c.storage === 'cookie' && config.name) {

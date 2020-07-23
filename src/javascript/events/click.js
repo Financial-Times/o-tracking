@@ -1,7 +1,7 @@
 import Delegate from 'ftdomdelegate';
 import Queue from '../core/queue';
 import Core from '../core';
-import utils from '../utils';
+import { sanitise, assignIfUndefined, merge, onPage } from '../utils';
 import settings from '../core/settings';
 import getTrace from '../../libs/get-trace';
 
@@ -42,7 +42,7 @@ const getEventProperties = event => {
 	for (const property of eventPropertiesToCollect) {
 		if (event[property]) {
 			try {
-				eventProperties[property] = utils.sanitise(event[property]);
+				eventProperties[property] = sanitise(event[property]);
 			} catch (e) {
 				// eslint-disable-next-line no-console
 				console.log(e);
@@ -62,12 +62,12 @@ const handleClickEvent = eventData => (clickEvent, clickElement) => {
 	context.domPathTokens = trace;
 	context.url = window.document.location.href || null;
 
-	utils.assignIfUndefined(customContext, context);
+	assignIfUndefined(customContext, context);
 
 	eventData.context = context;
 
 	// Merge the event data into the "parent" config data
-	const config = utils.merge(settings.get('config'), eventData);
+	const config = merge(settings.get('config'), eventData);
 	track(config);
 };
 
@@ -112,7 +112,7 @@ const init = (category, elementsToTrack) => {
 	runQueue();
 
 	// Listen for page requests. If this is a single page app, we can send link requests now.
-	utils.onPage(runQueue);
+	onPage(runQueue);
 };
 
 export default {

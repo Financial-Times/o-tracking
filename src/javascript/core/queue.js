@@ -1,4 +1,4 @@
-import utils from '../utils';
+import { isUndefined, broadcast, is} from '../utils';
 import Store from './store';
 
 /**
@@ -9,9 +9,9 @@ import Store from './store';
  * @return {Queue} - Returns the instance of the queue.
  */
 const Queue = function (name) {
-	if (utils.isUndefined(name)) {
+	if (isUndefined(name)) {
 		const undefinedName = new Error('You must specify a name for the queue.');
-		utils.broadcast('oErrors', 'log', {
+		broadcast('oErrors', 'log', {
 			error: undefinedName.message,
 			info: { module: 'o-tracking' }
 		});
@@ -103,7 +103,7 @@ Queue.prototype.add = function (item) {
 		});
 	}
 
-	if (utils.is(item, 'object') && item.constructor.toString().match(/array/i)) {
+	if (is(item, 'object') && item.constructor.toString().match(/array/i)) {
 		for (i = 0; i < item.length; i = i + 1) {
 			doAdd(item[i]);
 		}
@@ -122,7 +122,7 @@ Queue.prototype.add = function (item) {
  * @return {Queue} - Returns the instance of the queue.
  */
 Queue.prototype.replace = function (items) {
-	if (utils.is(items, 'object') && items.constructor.toString().match(/array/i)) {
+	if (is(items, 'object') && items.constructor.toString().match(/array/i)) {
 		this.queue = [];
 		this.add(items).save();
 
@@ -130,7 +130,7 @@ Queue.prototype.replace = function (items) {
 	}
 
 	const invalidArg = new Error('Argument invalid, must be an array.');
-	utils.broadcast('oErrors', 'log', {
+	broadcast('oErrors', 'log', {
 		error: invalidArg.message,
 		info: { module: 'o-tracking' }
 	});

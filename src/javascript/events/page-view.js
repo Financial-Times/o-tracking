@@ -1,5 +1,5 @@
 import Core from '../core';
-import utils from '../utils';
+import { merge, triggerPage, addEvent } from '../utils';
 import settings from '../core/settings';
 
 settings.set('page_viewed', false);
@@ -30,7 +30,7 @@ const defaultPageConfig = function () {
  * @return {void}
  */
 function page(config, callback) {
-	config = utils.merge(defaultPageConfig(), {
+	config = merge(defaultPageConfig(), {
 		context: config
 	});
 
@@ -43,7 +43,7 @@ function page(config, callback) {
 
 	// Alert internally that a new page has been tracked - for single page apps for example.
 	settings.set('page_viewed', true);
-	utils.triggerPage();
+	triggerPage();
 }
 
 /**
@@ -58,7 +58,7 @@ function listener(e) {
 }
 
 const init = function init() {
-	utils.addEvent(window, 'oTracking.page', listener);
+	addEvent(window, 'oTracking.page', listener);
 };
 page.init = init;
 export default page;

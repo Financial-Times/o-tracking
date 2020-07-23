@@ -1,4 +1,4 @@
-import utils from '../utils';
+import { isUndefined, broadcast, merge, decode, is, encode, containsCircularPaths, findCircularPathsIn } from '../utils';
 
 /**
  * Class for storing data
@@ -16,16 +16,16 @@ const Store = function (name, config) {
 	const keyPrefix = 'o-tracking';
 
 
-	if (utils.isUndefined(name)) {
+	if (isUndefined(name)) {
 		const undefinedName = new Error('You must specify a name for the store.');
-		utils.broadcast('oErrors', 'log', {
+		broadcast('oErrors', 'log', {
 			error: undefinedName.message,
 			info: { module: 'o-tracking' }
 		});
 		throw undefinedName;
 	}
 
-	this.config = utils.merge({ storage: 'best', expires: 10 * 365 * 24 * 60 * 60 * 1000 }, config);
+	this.config = merge({ storage: 'best', expires: 10 * 365 * 24 * 60 * 60 * 1000 }, config);
 
 	/**
 	 * Store data.
@@ -68,7 +68,7 @@ const Store = function (name, config) {
 					}
 				}
 			} catch (error) {
-				utils.broadcast('oErrors', 'log', {
+				broadcast('oErrors', 'log', {
 					error: error.message,
 					info: { module: 'o-tracking' }
 				});
@@ -85,7 +85,7 @@ const Store = function (name, config) {
 			for (i = 0; i < cookies.length; i = i + 1) {
 				cookie = cookies[i].replace(/^\s+|\s+$/g, '');
 				if (cookie.indexOf(name) === 0) {
-					return utils.decode(cookie.substring(name.length, cookie.length));
+					return decode(cookie.substring(name.length, cookie.length));
 				}
 			}
 
@@ -96,13 +96,13 @@ const Store = function (name, config) {
 			let d;
 			let expires = '';
 
-			if (utils.is(expiry, 'number')) {
+			if (is(expiry, 'number')) {
 				d = new Date();
 				d.setTime(d.getTime() + expiry);
 				expires = 'expires=' + d.toUTCString() + ';';
 			}
 
-			const cookie = utils.encode(name) + '=' + utils.encode(value) + ';' + expires + 'path=/;' + (config.domain ? 'domain=.' + config.domain + ';' : '');
+			const cookie = encode(name) + '=' + encode(value) + ';' + expires + 'path=/;' + (config.domain ? 'domain=.' + config.domain + ';' : '');
 			window.document.cookie = cookie;
 		}
 
@@ -144,7 +144,7 @@ const Store = function (name, config) {
 		try {
 			this.data = JSON.parse(loadStore);
 		} catch (error) {
-			utils.broadcast('oErrors', 'log', {
+			broadcast('oErrors', 'log', {
 				error: error.message,
 				module: 'o-tracking'
 			});
@@ -178,11 +178,11 @@ Store.prototype.write = function (data) {
 	if (typeof this.data === 'string') {
 		value = this.data;
 	} else {
-		if (utils.containsCircularPaths(this.data)) {
+		if (containsCircularPaths(this.data)) {
 			const errorMessage = "o-tracking does not support circular references in the analytics data.\n" +
 			"Please remove the circular references in the data.\n" +
 			"Here are the paths in the data which are circular:\n" +
-			JSON.stringify(utils.findCircularPathsIn(this.data), undefined, 4);
+			JSON.stringify(findCircularPathsIn(this.data), undefined, 4);
 			throw new Error(errorMessage);
 		}
 		value = JSON.stringify(this.data);

@@ -1,6 +1,6 @@
 // Trace the element and all of its parents, collecting properties as we go
 
-import utils from '../javascript/utils';
+import {sanitise, assignIfUndefined } from '../javascript/utils';
 
 const elementPropertiesToCollect = [
 	"nodeName",
@@ -27,10 +27,10 @@ const getSiblingsAndPosition = (el, originalEl, selector) => {
 const getAllElementProperties = el => {
 	return elementPropertiesToCollect.reduce((returnObject, property) => {
 		if (el[property]) {
-			returnObject[property] = utils.sanitise(el[property]);
+			returnObject[property] = sanitise(el[property]);
 		}
 		else if (el.getAttribute(property)) {
-			returnObject[property] = utils.sanitise(el.getAttribute(property));
+			returnObject[property] = sanitise(el.getAttribute(property));
 		}
 		else if (el.hasAttribute(property)) {
 			returnObject[property] = el.hasAttribute(property);
@@ -100,7 +100,7 @@ function getTrace (el) {
 
 		const contextProps = getContextProps(attrs, props, el === originalEl);
 
-		utils.assignIfUndefined(contextProps, customContext);
+		assignIfUndefined(contextProps, customContext);
 
 		el = el.parentNode;
 	}

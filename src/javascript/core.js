@@ -3,7 +3,7 @@ import Send from './core/send';
 import User from './core/user';
 import Session from './core/session';
 import settings from './core/settings';
-import utils from './utils';
+import { guid, getValueFromCookie, merge, log } from './utils';
 
 let rootID;
 
@@ -13,7 +13,7 @@ let rootID;
  * @return {string|*} The rootID.
  */
 function setRootID() {
-	rootID = utils.guid();
+	rootID = guid();
 	return rootID;
 }
 
@@ -45,12 +45,12 @@ function track(config, callback = function(){ /* empty */}) {
 		async: true,
 		callback,
 		context: {
-			id: config.id || utils.guid(), // Use a supplied id or generate one for this request
+			id: config.id || guid(), // Use a supplied id or generate one for this request
 			root_id: getRootID(),
 		},
 		user: {
-			ft_session: utils.getValueFromCookie(/FTSession=([^;]+)/),
-			ft_session_s: utils.getValueFromCookie(/FTSession_s=([^;]+)/)
+			ft_session: getValueFromCookie(/FTSession=([^;]+)/),
+			ft_session_s: getValueFromCookie(/FTSession_s=([^;]+)/)
 		},
 		device: {
 			spoor_session: session.id,
@@ -62,19 +62,19 @@ function track(config, callback = function(){ /* empty */}) {
 	// Override any context, user, and device values with object-wide settings
 	const settingsConfig = settings.get('config') || {};
 	if (settingsConfig.context) {
-		utils.merge(request.context, settingsConfig.context);
+		merge(request.context, settingsConfig.context);
 	}
 	if (settingsConfig.user) {
-		utils.merge(request.user, settingsConfig.user);
+		merge(request.user, settingsConfig.user);
 	}
 	if (settingsConfig.device) {
-		utils.merge(request.device, settingsConfig.device);
+		merge(request.device, settingsConfig.device);
 	}
 
 	// Update the base config with the parameter-supplied config
-	utils.merge(request, config);
+	merge(request, config);
 
-	utils.log('Core.Track', request);
+	log('Core.Track', request);
 
 	// Send it.
 	Send.addAndRun(request);
