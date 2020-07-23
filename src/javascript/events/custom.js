@@ -5,7 +5,7 @@ import { is, merge, broadcast, addEvent} from '../utils';
  * @typedef {Object} TrackingEvent
  * @property {EventDetail} detail - The custom o-tracking event details
  *
- * @typedef {Event & TrackingEvent} OTrackingEvent
+ * @typedef {CustomEvent & Event & TrackingEvent} OTrackingEvent
  *
  * @typedef {Object} EventDetail
  * @property {number} category - Category for this event e.g. page
@@ -30,7 +30,7 @@ const defaultEventConfig = function () {
 /**
  * Track an event.
  *
- * @param {OTrackingEvent} trackingEvent - The event, which could the following properties in its 'detail' key:
+ * @param {CustomEvent|OTrackingEvent} trackingEvent - The event, which could the following properties in its 'detail' key:
  *   [category] - The category, for example: video
  *   [action] - The action performed, for example: play
  *   [component_id] - Optional. The ID for the component instance.
