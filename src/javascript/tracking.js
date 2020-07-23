@@ -2,7 +2,7 @@ import settings from './core/settings';
 import user from './core/user';
 import session from './core/session';
 import send from './core/send';
-import event from './events/custom';
+import {event} from './events/custom';
 import page from './events/page-view';
 import {init as click} from './events/click';
 import core from './core';
@@ -131,7 +131,7 @@ class Tracking {
 		// Initialize the sending queue.
 		send.init();
 
-		this.event.init();
+		event.init();
 		this.page.init();
 		this.initialised = true;
 		return this;
@@ -226,12 +226,34 @@ class Tracking {
 	click(category, elementsToTrack) {
 		click(category, elementsToTrack);
 	}
+
+	/**
+	 * @typedef {Object} TrackingEvent
+	 * @property {EventDetail} detail - The custom o-tracking event details
+	 *
+	 * @typedef {Event & TrackingEvent} OTrackingEvent
+	 *
+	 * @typedef {Object} EventDetail
+	 * @property {number} category - Category for this event e.g. page
+	 * @property {number} action - Action for this event e.g. view
+	 * @property {Object} context - Extra context to add to the event
+	 */
+	/**
+	 * Track an event.
+	 *
+	 * @param {OTrackingEvent} trackingEvent - The event, which could the following properties in its 'detail' key:
+	 *   [category] - The category, for example: video
+	 *   [action] - The action performed, for example: play
+	 *   [component_id] - Optional. The ID for the component instance.
+	 *
+	 * @param {Function} callback - Optional, Callback function. Called when request completed.
+	 * @return {void}
+	 */
+	// eslint-disable-next-line class-methods-use-this
+	event(trackingEvent, callback) {
+		event(trackingEvent, callback);
+	}
 }
-/**
- * Track a custom event.
- * @see {@link event}
- */
-Tracking.prototype.event = event;
 
 /**
  * Make the page tracking request.
