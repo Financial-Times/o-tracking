@@ -247,7 +247,7 @@ Tracking.prototype.view = componentView;
 
 /**
  * Get the rootID.
- * @see {@link utils}
+ * @see {@link core#getRootID}
  */
 Tracking.prototype.getRootID = core.getRootID;
 
