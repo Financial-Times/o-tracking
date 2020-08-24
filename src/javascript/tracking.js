@@ -6,8 +6,75 @@ import event from './events/custom';
 import page from './events/page-view';
 import click from './events/click';
 import { getRootID } from './core';
-import { merge, broadcast } from './utils';
+import { merge, broadcast, log } from './utils';
 import view from './events/component-view';
+
+
+if (Array.isArray(window.oTrackingCommandQueue)) {
+	for (const item of window.oTrackingCommandQueue) {
+		switch (item.name) {
+			case "init": {
+				init.apply(undefined, item.arguments);
+				break;
+			}
+			case "page": {
+				page.apply(undefined, item.arguments);
+				break;
+			}
+			case "click.init": {
+				click.init.apply(click, item.arguments);
+				break;
+			}
+			case "view.init": {
+				view.init.apply(view, item.arguments);
+				break;
+			}
+			case "event": {
+				event.apply(undefined, item.arguments);
+				break;
+			}
+			case "page.init": {
+				page.init.apply(page, item.arguments);
+				break;
+			}
+			case "event.init": {
+				event.init.apply(event, item.arguments);
+				break;
+			}
+			default: {
+				log(`A command was queue which does not exist named: "${item.name}". Commands which exist are: "init", "page", "click.init", "view.init", "event", "page.init", and "event.init".`);
+			}
+		}
+	}
+	delete window.oTrackingCommandQueue;
+}
+
+if (window.pageTracker) {
+	window.removeEventListener('oTracking.page', window.pageTracker);
+}
+
+if (window.eventTracker) {
+	window.removeEventListener('oTracking.event', window.eventTracker);
+}
+
+if (Array.isArray(window.oTrackingEventQueue)) {
+	for (const item of window.oTrackingEventQueue) {
+		switch (item.name) {
+			case "page": {
+				page.apply(undefined, item.event.detail);
+				break;
+			}
+			case "event": {
+				event.apply(undefined, item.arguments);
+				break;
+			}
+			default: {
+				log(`An event was queued which does not exist named: "${item.name}". Events which exist are: "page", and "event".`);
+			}
+		}
+	}
+	delete window.oTrackingEventQueue;
+}
 
 /**
 * The version of the tracking module.

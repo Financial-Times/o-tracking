@@ -263,6 +263,72 @@ const customData = { category: 'video', action: 'play', id: '512346789', pos: '1
 document.body.dispatchEvent(new CustomEvent('oTracking.event', { detail: customData}, bubbles: true}));
 ```
 
+### Tracking before o-tracking has loaded
+
+Copy and paste this snippet into a script tag in the head of your webpage and o-tracking will be able to track events which have fired before o-tracking has loaded.
+
+```js
+window.oTrackingCommandQueue = [];
+window.oTrackingEventQueue = [];
+// function to spy on
+oTracking.init = function() {
+	oTrackingCommandQueue.push({
+		name: 'init',
+		arguments: arguments
+	});
+};
+oTracking.page = function() {
+	oTrackingCommandQueue.push({
+		name: 'page',
+		arguments: arguments
+	});
+};
+oTracking.click.init = function() {
+	oTrackingCommandQueue.push({
+		name: 'click.init',
+		arguments: arguments
+	});
+};
+oTracking.view.init = function() {
+	oTrackingCommandQueue.push({
+		name: 'view.init',
+		arguments: arguments
+	});
+};
+oTracking.event = function() {
+	oTrackingCommandQueue.push({
+		name: 'event',
+		arguments: arguments
+	});
+};
+oTracking.page.init = function() {
+	oTrackingCommandQueue.push({
+		name: 'page.init',
+		arguments: arguments
+	});
+};
+oTracking.event.init = function() {
+	oTrackingCommandQueue.push({
+		name: 'event.init',
+		arguments: arguments
+	});
+};
+
+// events to spy on
+window.addEventListener('oTracking.page', function pageTracker(event) {
+	oTrackingEventQueue.push({
+		name: 'page',
+		event: event
+	});
+});
+window.addEventListener('oTracking.event', function eventTracker(event) {
+	oTrackingEventQueue.push({
+		name: 'event',
+		event: event
+	});
+});
+```
+
 ## How to view the data
 
 Onec you have sent data into Spoor, you can view the data via Chartio.
