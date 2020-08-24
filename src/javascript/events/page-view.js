@@ -1,8 +1,9 @@
-import Core from '../core';
+import {setRootID,
+	track} from '../core';
 import {merge, triggerPage, addEvent, isDeepEqual} from '../utils';
-import settings from '../core/settings';
+import {set as setSetting, get as getSetting} from '../core/settings';
 
-settings.set('page_has_already_been_viewed', false);
+setSetting('page_has_already_been_viewed', false);
 
 /**
  * Default properties for page tracking requests.
@@ -39,21 +40,21 @@ function page(config, callback) {
 	// If o-tracking events were fired before this `page` function was ever called, then the first
 	// of those events would have created a `root_id` and we want the first page view event to reuse
 	// that `root_id` so those earlier events can be related to the page view they were from.
-	if (settings.get('page_has_already_been_viewed')) {
-		Core.setRootID();
+	if (getSetting('page_has_already_been_viewed')) {
+		setRootID();
 	}
-	settings.set('page_has_already_been_viewed', true);
+	setSetting('page_has_already_been_viewed', true);
 
 	// Some applications which use o-tracking have a bug where they send thousands of page-view events
 	// Instead of forwarding these errorneous events to Spoor, we ignore them.
 	// GitHub Issue: https://github.com/Financial-Times/o-tracking/issues/296
 	if (pageViewEventHasAlreadyBeenSentBefore(config)) {
-		if (settings.get('config').test) {
+		if (getSetting('config').test) {
 			// eslint-disable-next-line no-console
 			console.warn('A page event has already been sent for this page, refusing to send a duplicate page event.');
 		}
 	} else {
-		Core.track(config, callback);
+		track(config, callback);
 		// Alert internally that a new page has been tracked - for single page apps for example.
 		triggerPage();
 	}
@@ -88,5 +89,5 @@ const init = function init() {
 	addEvent(window, 'oTracking.page', listener);
 };
 page.init = init;
-export default page;
+
 export { page };

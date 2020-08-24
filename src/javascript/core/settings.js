@@ -56,11 +56,6 @@ function destroy(key) {
 const set = setValue;
 const get = getValue;
 
-export default {
-	set,
-	get,
-	destroy
-};
 export {
 	set,
 	get,

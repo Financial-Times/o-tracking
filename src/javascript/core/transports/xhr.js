@@ -24,5 +24,4 @@ function xhr() {
 	};
 }
 
-export default xhr;
 export { xhr };

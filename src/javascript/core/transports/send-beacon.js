@@ -23,5 +23,4 @@ function sendBeacon() {
 	};
 }
 
-export default sendBeacon;
 export { sendBeacon };
