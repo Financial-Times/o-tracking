@@ -1,16 +1,16 @@
-import {addAndRun} from './core/send';
-
-import { userID } from './core/user';
-import { session } from './core/session';
-import { get } from './core/settings';
-import { guid, getValueFromCookie, merge, log } from './utils';
+import {addAndRun} from './core/send.js';
+import { userID } from './core/user.js';
+import { session } from './core/session.js';
+import { get } from './core/settings.js';
+import { guid, getValueFromCookie, merge, log } from './utils.js';
 
 let rootID;
 
 /**
  * Generate and store a new rootID, used to mark a new root event that
  * subsequent events will be linked to.
- * @return {string|*} The rootID.
+ *
+ * @returns {string|*} The rootID.
  */
 function setRootID() {
 	rootID = guid();
@@ -19,7 +19,8 @@ function setRootID() {
 
 /**
  * Get the current rootID.
- * @return {string|*} The rootID.
+ *
+ * @returns {string|*} The rootID.
  */
 function getRootID() {
 	if (!rootID) {
@@ -32,10 +33,10 @@ function getRootID() {
 /**
  * Make a tracking request.
  *
- * @param {Object} config - Should be passed an object containing a format and the values for that format
- * @param {function=} callback - Fired when the request has been made.
+ * @param {object} config - Should be passed an object containing a format and the values for that format
+ * @param {Function} [callback] - Fired when the request has been made.
  *
- * @return {Object} request
+ * @returns {object} request
  */
 function track(config, callback = function(){ /* empty */}) {
 	const currentSession = session();

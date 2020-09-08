@@ -1,14 +1,13 @@
-import {setRootID,
-	track} from '../core';
-import {merge, triggerPage, addEvent, isDeepEqual} from '../utils';
-import {set as setSetting, get as getSetting} from '../core/settings';
+import {setRootID, track} from '../core.js';
+import {merge, triggerPage, addEvent, isDeepEqual} from '../utils.js';
+import {set as setSetting, get as getSetting} from '../core/settings.js';
 
 setSetting('page_has_already_been_viewed', false);
 
 /**
  * Default properties for page tracking requests.
  *
- * @return {Object} - The default properties for pages.
+ * @returns {object} - The default properties for pages.
  */
 const defaultPageConfig = function () {
 	return {
@@ -24,9 +23,9 @@ const defaultPageConfig = function () {
 /**
  * Make the page tracking request.
  *
- * @param {Object} config - Configuration object. If omitted, will use the defaults.
+ * @param {object} config - Configuration object. If omitted, will use the defaults.
  * @param {Function=} callback - Callback function. Called when request completed.
- * @return {void}
+ * @returns {void}
  */
 function page(config, callback) {
 	config = merge(defaultPageConfig(), {
@@ -61,6 +60,14 @@ function page(config, callback) {
 }
 
 let previousPageConfigWithoutContextIDs = {};
+
+/**
+ * Detect whether the previously sent page-view event is the
+ * same as the page-view event which is about to be sent.
+ *
+ * @param {object} config - The page configuration object
+ * @returns {boolean} - Whether the event has been sent before
+ */
 function pageViewEventHasAlreadyBeenSentBefore(config) {
 	const configWithoutContextIDs = JSON.parse(JSON.stringify(config));
 	delete configWithoutContextIDs.context.id;
@@ -79,7 +86,7 @@ function pageViewEventHasAlreadyBeenSentBefore(config) {
  *
  * @param {CustomEvent} e - The CustomEvent
  * @private
- * @return {void}
+ * @returns {void}
  */
 function listener(e) {
 	page(e.detail);

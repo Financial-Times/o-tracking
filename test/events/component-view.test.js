@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 /* global proclaim sinon */
 
-import '../setup';
+import '../setup.js';
 
-import settings from '../../src/javascript/core/settings';
-import send from '../../src/javascript/core/send';
-import core from '../../src/javascript/core';
-import session from '../../src/javascript/core/session';
-import componentView from '../../src/javascript/events/component-view';
+import settings from '../../src/javascript/core/settings.js';
+import send from '../../src/javascript/core/send.js';
+import core from '../../src/javascript/core.js';
+import session from '../../src/javascript/core/session.js';
+import componentView from '../../src/javascript/events/component-view.js';
 
 const config = {
 	context: {
@@ -184,7 +184,7 @@ describe('component:view', () => {
 				});
 
 				it('should throw an error', () => {
-					proclaim.equal(errorThrown.message, 'opts.getContextData function should return {Object}');
+					proclaim.equal(errorThrown.message, 'opts.getContextData function should return {object}');
 					proclaim.equal(observeSpy.calledOnce, true, 'IntersectionObserver observed target');
 					proclaim.equal(unobserveSpy.calledOnce, false, 'IntersectionObserver unobserved target');
 					proclaim.equal(core.track.calledOnce, false, 'view event tracked');

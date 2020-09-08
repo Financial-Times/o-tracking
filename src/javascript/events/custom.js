@@ -1,15 +1,15 @@
-import {track} from '../core';
+import {track} from '../core.js';
 import {
 	is,
 	broadcast,
 	merge,
-	addEvent} from '../utils';
+	addEvent} from '../utils.js';
 
 /**
  * Default properties for events.
  *
- * @type {Object}
- * @return {Object} - Default configuration for events
+ * @type {object}
+ * @returns {object} - Default configuration for events
  */
 const defaultEventConfig = function () {
 	return {
@@ -22,15 +22,15 @@ const defaultEventConfig = function () {
 /**
  * Track an event.
  *
- * @param {Object} trackingEvent - The event, which could the following properties in its 'detail' key:
- * @param {Object} [trackingEvent.detail] - Custom properties to add to the event.
+ * @param {object} trackingEvent - The event, which could the following properties in its 'detail' key:
+ * @param {object} [trackingEvent.detail] - Custom properties to add to the event.
  * @param {string} [trackingEvent.detail.category] - Category for this event e.g. page
  * @param {string} [trackingEvent.detail.action] - Action for this event e.g. view
  * @param {string} [trackingEvent.detail.component_id] - The ID for the component instance.
- * @param {Object} [trackingEvent.detail.context] - Extra context to add to the event
+ * @param {object} [trackingEvent.detail.context] - Extra context to add to the event
  *
  * @param {Function} [callback] - Optional, Callback function. Called when request completed.
- * @return {void}
+ * @returns {void}
  */
 function event(trackingEvent, callback) {
 	if (is(trackingEvent.detail.category) || is(trackingEvent.detail.action)) {
@@ -62,8 +62,9 @@ function event(trackingEvent, callback) {
 
 /**
  * Helper function that gets the target of an event if it's an Origami component
+ *
  * @param  {Event} event - The event triggered.
- * @return {HTMLElement|undefined} - Returns the HTML element if an Origami component, else undefined.
+ * @returns {HTMLElement|undefined} - Returns the HTML element if an Origami component, else undefined.
  */
 function getOrigamiEventTarget(event) {
 	// IE backwards compatibility (get the actual target). If not IE, uses
@@ -80,7 +81,7 @@ function getOrigamiEventTarget(event) {
  *
  * @param {HTMLElement} element - The HTML Element to gen an ID for.
  *
- * @return {number} hash
+ * @returns {number} hash
  */
 function getComponentId(element) {
 	const path = _getElementPath(element);
@@ -139,7 +140,7 @@ function getComponentId(element) {
  *
  * @private
  *
- * @return {array} The xpath
+ * @returns {Array} The xpath
  */
 function _getElementPath(element) {
 	const path = [];
@@ -169,7 +170,7 @@ function _getElementPath(element) {
  *
  * @param {string} str  - The string to hash, ASCII only.
  *
- * @return {number} 32-bit positive integer hash
+ * @returns {number} 32-bit positive integer hash
  *
  * @private
  */

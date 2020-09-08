@@ -1,6 +1,6 @@
 /* global sinon*/
 
-import {mock} from '../src/javascript/core/transports';
+import {mock} from '../src/javascript/core/transports/index.js';
 
 let willError = false;
 

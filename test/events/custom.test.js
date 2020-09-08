@@ -1,12 +1,12 @@
 /* eslint-env mocha */
 /* global proclaim sinon */
 
-import '../setup';
+import '../setup.js';
 
-import {Queue} from '../../src/javascript/core/queue';
-import settings from '../../src/javascript/core/settings';
-import send from '../../src/javascript/core/send';
-import session from '../../src/javascript/core/session';
+import {Queue} from '../../src/javascript/core/queue.js';
+import settings from '../../src/javascript/core/settings.js';
+import send from '../../src/javascript/core/send.js';
+import session from '../../src/javascript/core/session.js';
 import trackEvent from '../../src/javascript/events/custom.js';
 
 describe('event', function () {

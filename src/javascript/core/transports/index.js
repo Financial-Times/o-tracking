@@ -1,6 +1,6 @@
-import {xhr} from './xhr';
-import {sendBeacon} from './send-beacon';
-import {image} from './image';
+import {xhr} from './xhr.js';
+import {sendBeacon} from './send-beacon.js';
+import {image} from './image.js';
 
 export {
 	xhr,
@@ -13,6 +13,12 @@ export {
  */
 export let mock = {};
 
+/**
+ * Given the name of a transport, returns that transport if it exists.
+ *
+ * @param {string} name - The name of the transport to use
+ * @returns {Function|undefined} - The transport function or undefined if not found.
+ */
 export function get(name) {
 	if (mock.transport) {
 		return mock.transport;

@@ -1,9 +1,9 @@
 import Delegate from 'ftdomdelegate';
-import {Queue} from '../core/queue';
-import {getRootID, track as sendTrackingEvent} from '../core';
-import {sanitise, assignIfUndefined, merge, onPage} from '../utils';
-import {get as getSetting} from '../core/settings';
-import {getTrace} from '../../libs/get-trace';
+import {Queue} from '../core/queue.js';
+import {getRootID, track as sendTrackingEvent} from '../core.js';
+import {sanitise, assignIfUndefined, merge, onPage} from '../utils.js';
+import {get as getSetting} from '../core/settings.js';
+import {getTrace} from '../../libs/get-trace.js';
 
 let internalQueue;
 
@@ -75,7 +75,8 @@ const handleClickEvent = eventData => (clickEvent, clickElement) => {
 /**
  * If there are any requests queued, attempts to send the next one
  * Otherwise, does nothing
- * @return {void}
+ *
+ * @returns {void}
  */
 /*eslint-disable no-unused-vars*/
 const runQueue = _ => {
@@ -91,9 +92,9 @@ const runQueue = _ => {
  * Listen for click events.
  *
  * @alias click#init
- * @param {String} category - The event category for clicks.
- * @param {String} elementsToTrack - A query selector string to select elements to track links on {@link https://github.com/ftlabs/ftdomdelegate#selector-string}.
- * @return {void}
+ * @param {string} category - The event category for clicks.
+ * @param {string} elementsToTrack - A query selector string to select elements to track links on {@link https://github.com/ftlabs/ftdomdelegate#selector-string}.
+ * @returns {void}
  */
 const init = (category, elementsToTrack) => {
 	elementsToTrack = elementsToTrack || 'a, button, input, [role="button"]'; // See https://github.com/ftlabs/ftdomdelegate#selector-string
