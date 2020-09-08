@@ -82,7 +82,7 @@ function track(config, callback = function(){ /* empty */}) {
 	return request;
 }
 
-export {
+export default {
 	setRootID,
 	getRootID,
 	track

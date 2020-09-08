@@ -1,4 +1,4 @@
-import {track} from '../core.js';
+import core from '../core.js';
 import {
 	is,
 	broadcast,
@@ -57,7 +57,7 @@ function event(trackingEvent, callback) {
 		config.context.component_id = config.context.component_id || getComponentId(origamiElement);
 	}
 
-	track(config, callback);
+	core.track(config, callback);
 }
 
 /**

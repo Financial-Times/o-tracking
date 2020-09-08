@@ -1,6 +1,6 @@
 import Delegate from 'ftdomdelegate';
 import {Queue} from '../core/queue.js';
-import {getRootID, track as sendTrackingEvent} from '../core.js';
+import core from '../core.js';
 import {sanitise, assignIfUndefined, merge, onPage} from '../utils.js';
 import {get as getSetting} from '../core/settings.js';
 import {getTrace} from '../../libs/get-trace.js';
@@ -18,14 +18,14 @@ const track = eventData => {
 	const isInternal = href && href.indexOf(window.document.location.hostname) > -1;
 
 	if (isInternal && !skipQueue) {
-		eventData.context.source_id = getRootID();
+		eventData.context.source_id = core.getRootID();
 
 		// Queue the event and send it on the next page load
 		internalQueue.add(eventData).save();
 	}
 	else {
 		// Send now, before leaving this page
-		sendTrackingEvent(eventData);
+		core.track(eventData);
 	}
 };
 
@@ -83,7 +83,7 @@ const runQueue = _ => {
 	const next = _ => { runQueue(); };
 	const nextLink = internalQueue.shift();
 	if (nextLink) {
-		sendTrackingEvent(nextLink, next);
+		core.track(nextLink, next);
 	}
 };
 /*eslint-enable no-unused-vars*/

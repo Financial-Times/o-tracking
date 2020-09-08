@@ -11,7 +11,7 @@ export {
 /**
  * @type {object|undefined} - mock transport for testing
  */
-export let mock = {};
+export const mock = {};
 
 /**
  * Given the name of a transport, returns that transport if it exists.

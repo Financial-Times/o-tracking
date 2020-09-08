@@ -68,7 +68,7 @@ function getSession() {
 /**
  * Init
  *
- * @param {string|object} config The name used to store the session or configuration object.
+ * @param {string|object} [config] The name used to store the session or configuration object.
  * @returns {Session} - The session
  */
 function init(config) {

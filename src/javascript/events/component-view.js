@@ -1,4 +1,4 @@
-import {track} from '../core.js';
+import core from '../core.js';
 import {getTrace} from '../../libs/get-trace.js';
 import {assignIfUndefined, filterProperties} from '../utils.js';
 
@@ -69,7 +69,7 @@ const init = (opts = {}) => {
 				const viewedEl = change.target;
 
 				decorateEventData(eventData, viewedEl, opts);
-				track(eventData);
+				core.track(eventData);
 				observer.unobserve(viewedEl);
 			}
 		});
