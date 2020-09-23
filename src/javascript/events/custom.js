@@ -30,9 +30,9 @@ const defaultEventConfig = function () {
  * @param {object} [trackingEvent.detail.context] - Extra context to add to the event
  *
  * @param {Function} [callback] - Optional, Callback function. Called when request completed.
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function event(trackingEvent, callback) {
+async function event(trackingEvent, callback) {
 	if (is(trackingEvent.detail.category) || is(trackingEvent.detail.action)) {
 		const noCategoryActionVals = 'Missing category or action values';
 		broadcast('oErrors', 'log', {
@@ -54,7 +54,7 @@ function event(trackingEvent, callback) {
 	const origamiElement = getOrigamiEventTarget(trackingEvent);
 	if (origamiElement) {
 		config.context.component_name = origamiElement.getAttribute('data-o-component');
-		config.context.component_id = config.context.component_id || getComponentId(origamiElement);
+		config.context.component_id = config.context.component_id || await getComponentId(origamiElement);
 	}
 
 	core.track(config, callback);
@@ -81,9 +81,9 @@ function getOrigamiEventTarget(event) {
  *
  * @param {HTMLElement} element - The HTML Element to gen an ID for.
  *
- * @returns {number} hash
+ * @returns {Promise<string>} hash
  */
-function getComponentId(element) {
+async function getComponentId(element) {
 	const path = _getElementPath(element);
 
 	if (typeof path === 'undefined') {
@@ -130,7 +130,23 @@ function getComponentId(element) {
 
 
 	// Append a sibling index to the string and use some simple, off the shelf string hashing algorithm.
-	return _generateHash(normalisedStringPath + '_siblingIndex=' + siblingIndex);
+	const buffer = new TextEncoder().encode(normalisedStringPath + '_siblingIndex=' + siblingIndex);
+	const digest = await crypto.subtle.digest('SHA-256', buffer);
+	return buffer2hex(digest);
+}
+
+/**
+ * Converts a buffer into hex.
+ *
+ * @param {ArrayBuffer} buffer the buffer to convert to hex
+ * @returns {string} hex representation of the buffer
+ */
+function buffer2hex(buffer) {
+	let hex = '';
+	for (const chunk of new Uint8Array(buffer)) {
+		hex += ('00' + chunk.toString(16)).slice(-2);
+	}
+	return hex;
 }
 
 /**
@@ -151,71 +167,6 @@ function _getElementPath(element) {
 	}
 
 	return path;
-}
-
-/**
- * JS Implementation of MurmurHash2
- *
- * @author <a href="mailto:gary.court@gmail.com">Gary Court</a>
- * @see http://github.com/garycourt/murmurhash-js
- * @author <a href="mailto:aappleby@gmail.com">Austin Appleby</a>
- * @see http://sites.google.com/site/murmurhash/
- * Copyright (c) 2011 Gary Court
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * @param {string} str  - The string to hash, ASCII only.
- *
- * @returns {number} 32-bit positive integer hash
- *
- * @private
- */
-function _generateHash(str) {
-	let l = str.length;
-	let h = 1 ^ l;
-	let i = 0;
-	let k;
-
-	while (l >= 4) {
-		k = str.charCodeAt(i) & 0xff |
-			(str.charCodeAt(++i) & 0xff) << 8 |
-			(str.charCodeAt(++i) & 0xff) << 16 |
-			(str.charCodeAt(++i) & 0xff) << 24;
-
-		k = (k & 0xffff) * 0x5bd1e995 + (((k >>> 16) * 0x5bd1e995 & 0xffff) << 16);
-		k ^= k >>> 24;
-		k = (k & 0xffff) * 0x5bd1e995 + (((k >>> 16) * 0x5bd1e995 & 0xffff) << 16);
-
-		h = (h & 0xffff) * 0x5bd1e995 + (((h >>> 16) * 0x5bd1e995 & 0xffff) << 16) ^ k;
-
-		l -= 4;
-		++i;
-	}
-
-	switch (l) {
-		case 3:
-			h ^= (str.charCodeAt(i + 2) & 0xff) << 16;
-			break;
-		case 2:
-			h ^= (str.charCodeAt(i + 1) & 0xff) << 8;
-			break;
-		case 1:
-			h ^= str.charCodeAt(i) & 0xff;
-			h = (h & 0xffff) * 0x5bd1e995 + (((h >>> 16) * 0x5bd1e995 & 0xffff) << 16);
-			break;
-		default:
-			break;
-	}
-
-	h ^= h >>> 13;
-	h = (h & 0xffff) * 0x5bd1e995 + (((h >>> 16) * 0x5bd1e995 & 0xffff) << 16);
-	h ^= h >>> 15;
-
-	return h >>> 0;
 }
 
 const init = function init() {

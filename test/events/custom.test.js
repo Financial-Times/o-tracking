@@ -50,7 +50,7 @@ describe('event', function () {
 		proclaim.equal(sent_data.context.component_name, 'custom-o-tracking');
 	});
 
-	it('should listen to a dom event and generate a component_id', function () {
+	it('should listen to a dom event and generate a component_id', function (done) {
 
 		const event = new CustomEvent('oTracking.event', {
 			detail: {
@@ -62,31 +62,36 @@ describe('event', function () {
 		});
 
 		document.body.setAttribute('data-o-component', 'o-tracking');
-		document.body.addEventListener('oTracking.event', function(e) {
+		document.body.addEventListener('oTracking.event', async function(e) {
 
-			const callback = sinon.spy();
 
-			trackEvent(e, callback);
-			proclaim.ok(callback.called, 'Callback not called.');
+			try {
+				const callback = sinon.spy();
 
-			const sent_data = callback.getCall(0).thisValue;
+				await trackEvent(e, callback);
+				proclaim.ok(callback.called, 'Callback not called.');
 
-			proclaim.deepEqual(Object.keys(sent_data), ["system","context","user","device","category","action"]);
+				const sent_data = callback.getCall(0).thisValue;
 
-			// Event
-			proclaim.equal(sent_data.category, "video");
-			proclaim.equal(sent_data.action, "play");
-			proclaim.equal(sent_data.context.key, 'id');
-			proclaim.equal(sent_data.context.value, 51234);
-			proclaim.equal(typeof sent_data.context.component_id, "number");
-			proclaim.equal(sent_data.context.component_name, "o-tracking");
+				proclaim.deepEqual(Object.keys(sent_data), ["system","context","user","device","category","action"]);
 
+				// Event
+				proclaim.equal(sent_data.category, "video");
+				proclaim.equal(sent_data.action, "play");
+				proclaim.equal(sent_data.context.key, 'id');
+				proclaim.equal(sent_data.context.value, 51234);
+				proclaim.equal(typeof sent_data.context.component_id, "string");
+				proclaim.equal(sent_data.context.component_name, "o-tracking");
+				done();
+			} catch (error) {
+				done(error);
+			}
 		});
 
 		document.body.dispatchEvent(event);
 	});
 
-	it('should throw custom error message if the tracking event object contains circular references', function () {
+	it('should throw custom error message if the tracking event object contains circular references', async function () {
 
 		const callback = sinon.spy();
 
@@ -98,8 +103,8 @@ Here are the paths in the data which are circular:
 [
     ".context.context.circular"
 ]`;
-		proclaim.throws(function(){
-			trackEvent(
+		try {
+			await trackEvent(
 				new CustomEvent("oTracking.event", {
 					detail: {
 						category: "slideshow",
@@ -112,6 +117,10 @@ Here are the paths in the data which are circular:
 				}),
 				callback
 			);
-		}, errorMessage);
+			proclaim.notOk("Expected function to throw an error but it did not");
+		} catch (error) {
+			proclaim.isInstanceOf(error, Error);
+			proclaim.equal(error.message, errorMessage);
+		}
 	});
 });

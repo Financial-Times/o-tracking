@@ -1,3 +1,6 @@
 module.exports = {
-	"extends": "origami-component"
+	"extends": "origami-component",
+	"parserOptions": {
+		"ecmaVersion": 2020
+	},
 };
