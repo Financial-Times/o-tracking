@@ -131,7 +131,9 @@ async function getComponentId(element) {
 
 	// Append a sibling index to the string and use some simple, off the shelf string hashing algorithm.
 	const buffer = new TextEncoder().encode(normalisedStringPath + '_siblingIndex=' + siblingIndex);
-	const digest = await crypto.subtle.digest('SHA-256', buffer);
+	// crypto.webkitSubtle is for iOS 10.0 which we support.
+	const subtleCrypto = crypto.subtle || crypto.webkitSubtle;
+	const digest = await subtleCrypto.digest('SHA-256', buffer);
 	return buffer2hex(digest);
 }
 
@@ -148,6 +150,19 @@ function buffer2hex(buffer) {
 	}
 	return hex;
 }
+
+// function cyrb53 (str) {
+// 	let h1 = 0xdeadbeef;
+// 	let h2 = 0x41c6ce57;
+//     for (let i = 0, ch; i < str.length; i++) {
+//         ch = str.charCodeAt(i);
+//         h1 = Math.imul(h1 ^ ch, 2654435761);
+//         h2 = Math.imul(h2 ^ ch, 1597334677);
+//     }
+//     h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+//     h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+//     return 4294967296 * (2097151 & h2) + (h1>>>0);
+// };
 
 /**
  * Gets the xpath for an element
