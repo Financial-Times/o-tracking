@@ -103,6 +103,13 @@ Here are the paths in the data which are circular:
 [
     ".context.context.circular"
 ]`;
+		const errorMessageOnIOS10 = `o-tracking does not support circular references in the analytics data.
+Please remove the circular references in the data.
+Here are the paths in the data which are circular:
+[
+    "[0].item.context.context.circular"
+]`;
+
 		try {
 			await trackEvent(
 				new CustomEvent("oTracking.event", {
@@ -120,7 +127,11 @@ Here are the paths in the data which are circular:
 			proclaim.notOk("Expected function to throw an error but it did not");
 		} catch (error) {
 			proclaim.isInstanceOf(error, Error);
-			proclaim.equal(error.message, errorMessage);
+			try {
+				proclaim.equal(error.message, errorMessage);
+			} catch (testError) {
+				proclaim.equal(error.message, errorMessageOnIOS10);
+			}
 		}
 	});
 });

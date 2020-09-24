@@ -3,59 +3,19 @@
 Include in your product to send tracking requests to the [Spoor API](https://spoor-docs.herokuapp.com/).
 
 - [Usage](#usage)
-- [How To View The Data](#how-to-view-the-data)
-- [Example Implementations](#example-implementations)
+  - [Tracking without JavaScript](#tracking-without-javascript)
+  - [Tracking with JavaScript](#tracking-with-javascript)
+  - [How to track extra click data using `data-trackable` attributes](#how-to-track-extra-click-data-using-data-trackable-attributes)
+- [How to view the data](#how-to-view-the-data)
+- [Example implementations](#example-implementations)
 - [Migration Guide](#migration-guide)
 - [Contact](#contact)
 - [Licence](#licence)
 
+
 ## Usage
 
 Check out [how to include Origami components in your project](https://origami.ft.com/docs/components/#including-origami-components-in-your-project) to get started with `o-tracking`.
-
-### How to view the data
-
-Once you have sent data into Spoor, you can view the data via Chartio.
-The FT has a Slack channel named #chartio_q_a where anyone can get help with Chartio.
-If you have never used Chartio before, you will need to [request access via this form](https://docs.google.com/forms/d/e/1FAIpQLSc1z1hTtnhe4KSXuZ220Zf53wTm0ucYVf2B3jYY5ZSyNW2VSw/viewform).
-To sign in to Chartio:
-- Open the [FT Chartio](https://chartio.com/financialtimes/) in your browser.
-- Press the "Sign in with Google" button and select your FT Google Account.
-
-### How to track extra click data using `data-trackable` attributes
-
-You can add extra information to o-tracking events by using the `data-trackable` and `data-trackable-context-*` custom attributes.
-
-#### `data-trackable`
-
-`o-tracking` will walk up the DOM to get the tree of elements with `data-trackable` attributes. For example, clicks to the list-item button below will result in an event that has this path recorded within it - `header-menu country-selector china`:-
-
-```html
-<div data-trackable="header-menu">
-	<span>
-		<div data-trackable="country-selector">
-			<ul>
-				<li data-trackable="china"><button>China</button></li>
-			</ul>
-		</div>
-	</span>
-</div>
-```
-
-#### `data-trackable-context-*`
-
-To add extra context to events you may add custom attributes in the form: `data-trackable-context-name="data"` where `name` is the name of the extra context and `data` is the extra data.
-
-For example, when the below anchor element is clicked, it will add extra event fields `article_guid` and `article_source` to the data being tracked.
-
-```html
-<a href="https://www.ft.com/content/1234-1234-1234-1234"
-	data-trackable="view-original-article"
-	data-trackable-context-article_guid="1234-1234-1234-1234"
-	data-trackable-context-article_source="FINANCIAL TIMES">
-```
-
-
 
 ### Tracking without JavaScript
 
@@ -237,7 +197,7 @@ Please refer to the [event document](docs/event.md) for information about all th
 
 #### Events
 
-Instead of calling the `page` and `event` methods `o-tracking` can be configured to fire events based on the custom DOM Events `oTracking.page` and `oTracking.event`.
+Instead of calling the `page` and `event` methods `o-tracking` can be configured to capture events based on the custom DOM Events `oTracking.page` and `oTracking.event`.
 
 ##### oTracking.page
 
@@ -263,9 +223,44 @@ const customData = { category: 'video', action: 'play', id: '512346789', pos: '1
 document.body.dispatchEvent(new CustomEvent('oTracking.event', { detail: customData}, bubbles: true}));
 ```
 
+
+### How to track extra click data using `data-trackable` attributes
+
+You can add extra information to o-tracking events by using the `data-trackable` and `data-trackable-context-*` custom attributes.
+
+#### `data-trackable`
+
+`o-tracking` will walk up the DOM to get the tree of elements with `data-trackable` attributes. For example, clicks to the list-item button below will result in an event that has this path recorded within it - `header-menu country-selector china`:-
+
+```html
+<div data-trackable="header-menu">
+	<span>
+		<div data-trackable="country-selector">
+			<ul>
+				<li data-trackable="china"><button>China</button></li>
+			</ul>
+		</div>
+	</span>
+</div>
+```
+
+#### `data-trackable-context-*`
+
+To add extra context to events you may add custom attributes in the form: `data-trackable-context-name="data"` where `name` is the name of the extra context and `data` is the extra data.
+
+For example, when the below anchor element is clicked, it will add extra event fields `article_guid` and `article_source` to the data being tracked.
+
+```html
+<a href="https://www.ft.com/content/1234-1234-1234-1234"
+	data-trackable="view-original-article"
+	data-trackable-context-article_guid="1234-1234-1234-1234"
+	data-trackable-context-article_source="FINANCIAL TIMES">
+```
+
+
 ## How to view the data
 
-Onec you have sent data into Spoor, you can view the data via Chartio.
+Once you have sent data into Spoor, you can view the data via Chartio.
 
 The FT has a Slack channel named #chartio_q_a where anyone can get help with Chartio.
 
