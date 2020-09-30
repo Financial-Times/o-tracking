@@ -8,8 +8,6 @@
 
 o-tracking now uses the Beacon API in all browsers which support it. In v2 this was an opt-in feature, now it is always enabled in browsers which support it. For browsers which do not support Beacon API o-tracking will revert to the XMLHTTPRequest API.
 
-o-tracking now uses the Crypto, TextEncoder, and Uint8Array APIs, to support older browser please include polyfills for these features.
-
 The `Tracking.prototype.utils` object has been removed.
 
 The methods `setDomain` and `getDomain` have been removed, o-tracking only works with the spoor domain, which is set automatically.
