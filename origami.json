@@ -18,10 +18,7 @@
 			"WeakSet",
 			"Object.entries",
 			"Object.values",
-			"Array.isArray",
-			"TextEncoder",
-			"crypto.subtle",
-			"Uint8Array"
+			"Array.isArray"
 		],
 		"optional": [
 			"Promise",
