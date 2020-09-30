@@ -54,7 +54,12 @@ async function event(trackingEvent, callback) {
 	const origamiElement = getOrigamiEventTarget(trackingEvent);
 	if (origamiElement) {
 		config.context.component_name = origamiElement.getAttribute('data-o-component');
-		config.context.component_id = config.context.component_id || await getComponentId(origamiElement);
+		if (!config.context.component_id) {
+			broadcast('oErrors', 'log', {
+				error: 'Missing an ID for the component being tracked. Need to add a `component_id` property to the event being tracked.',
+				info: { module: 'o-tracking' }
+			});
+		}
 	}
 
 	core.track(config, callback);
@@ -74,67 +79,6 @@ function getOrigamiEventTarget(event) {
 	if (element && element.getAttribute('data-o-component')) {
 		return element;
 	}
-}
-
-/**
- * Helper function that generates a component id based on its xpath
- *
- * @param {HTMLElement} element - The HTML Element to gen an ID for.
- *
- * @returns {Promise<string>} hash
- */
-async function getComponentId(element) {
-	const path = _getElementPath(element);
-
-	if (typeof path === 'undefined') {
-		return;
-	}
-
-	// Select the source element (first item in the ordered sequence `path`)
-	const srcElement = path[0];
-
-	// Because, you could have two identical elements in the DOM as siblings,
-	// we need to determine the 'sibling index': the order they're sitting within a DOM node.
-	// Although in reality this is unlikely to always be the same, it's just a
-	// best guess - unless child elements are always appended to an element rather than added as the first child.
-	const siblingIndex = (function getSiblingIndex(element) {
-		const srcParent = element.parentElement;
-		if (srcParent) {
-			for (let i = 0; i < srcParent.childNodes.length; i++) {
-				if (srcParent.childNodes[i] === srcElement) {
-					return i;
-				}
-			}
-			return -1;
-		} else {
-			return 0;
-		}
-	}(srcElement));
-
-	// Generate a normalised string (normalising browser quirks) from the sequence of elements
-	const normalisedStringPath = path.reduceRight(function(builder, el) {
-		if (!el.nodeName) {
-			return builder + ' - ' + el.constructor.name + '\n';
-		}
-
-		const nodeName = el.nodeName.toLowerCase();
-
-		// In some browsers, document is prepended with a '#'
-		if (nodeName.indexOf('#') === 0) {
-			return builder + '<' + nodeName + '>';
-		}
-
-		// Replace this stuff with stuff that makes each node unique - without including styling detail (as this may change depending on animation state etc, position)
-		return builder + '<' + nodeName +' id="' + (el.id || '') + '">';
-	}, '');
-
-
-	// Append a sibling index to the string and use some simple, off the shelf string hashing algorithm.
-	const buffer = new TextEncoder().encode(normalisedStringPath + '_siblingIndex=' + siblingIndex);
-	// crypto.webkitSubtle is for iOS 10.0 which we support.
-	const subtleCrypto = crypto.subtle || crypto.webkitSubtle;
-	const digest = await subtleCrypto.digest('SHA-256', buffer);
-	return buffer2hex(digest);
 }
 
 /**
