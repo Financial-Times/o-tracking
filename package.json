@@ -23,10 +23,10 @@
     "homepage": "https://github.com/Financial-Times/o-tracking",
     "main": "main.js",
     "peerDependencies": {
-        "ftdomdelegate": "^100.0.0-4"
+        "ftdomdelegate": "^100.0.0-5"
     },
     "publishConfig": {
         "registry": "http://localhost:4873"
     },
-    "version": "100.0.0-4"
+    "version": "100.0.0-5"
 }

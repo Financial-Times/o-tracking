@@ -80,7 +80,7 @@ function oTrackinginit() {
 
 Use the build service or require locally to load o-tracking and init manually.
 ```js
-import oTracking from 'o-tracking';
+import oTracking from '@financial-times/o-tracking';
 ```
 
 ```js
