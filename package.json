@@ -1,5 +1,5 @@
 {
-    "name": "o-tracking",
+    "name": "@financial-times/o-tracking",
     "description": "Provides tracking for a product. Tracking requests are sent to the Spoor API.",
     "devDependencies": {
         "eslint": "^7.8.1",
