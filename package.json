@@ -21,7 +21,7 @@
         "url": "https://github.com/Financial-Times/o-tracking/issues"
     },
     "homepage": "https://github.com/Financial-Times/o-tracking",
-    "main": "main.js",
+    "browser": "main.js",
     "peerDependencies": {
         "ftdomdelegate": "^100.0.0-6"
     },
