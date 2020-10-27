@@ -32,9 +32,9 @@
 		"stylelint-config-origami-component": "^1.0.4"
     },
     "peerDependencies": {
-        "ftdomdelegate": "^100.0.0-8"
+        "ftdomdelegate": "^100.0.0-9"
     },
     "publishConfig": {
-        "registry": "http://localhost:4873"
+        "registry": "https://origami-npm-registry-prototype.herokuapp.com"
     }
 }
