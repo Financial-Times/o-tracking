@@ -1,7 +1,11 @@
+<<<<<<< Updated upstream
 /**
  * Shared 'internal' scope.
  */
 import {get} from './core/settings.js';
+=======
+import settings from './core/settings';
+>>>>>>> Stashed changes
 
 /**
  * CUID Generator
@@ -16,6 +20,7 @@ const page_callbacks = [];
 /**
  * Log messages to the browser console. Requires 'log' to be set on init.
  *
+<<<<<<< Updated upstream
  * @param {*} args items to log
  * @returns {void}
  */
@@ -23,6 +28,15 @@ function log(...args) {
 	if (get('config').test && window.console) {
 		for (const arg of args) {
 			window.console.log(arg);
+=======
+ * @param {*} args List of objects to log
+ * @return {void}
+ */
+function log(...args) {
+	if (settings.get('developer') && window.console) {
+		for (let i=0;i<args.length;i++) {
+			window.console.log(args[i]);
+>>>>>>> Stashed changes
 		}
 	}
 }
@@ -147,7 +161,11 @@ function broadcast(namespace, eventType, detail) {
  * Listen for page tracking requests.
  *
  * @param {Function} cb - The callback to be called whenever a page is tracked.
+<<<<<<< Updated upstream
  * @returns {void}
+=======
+ * @return {void}
+>>>>>>> Stashed changes
  */
 function onPage(cb) {
 	if (is(cb, 'function')) {
@@ -157,8 +175,12 @@ function onPage(cb) {
 
 /**
  * Trigger the 'page' listeners.
+<<<<<<< Updated upstream
  *
  * @returns {void}
+=======
+ * @return {void}
+>>>>>>> Stashed changes
  */
 function triggerPage() {
 	for (let i = 0; i < page_callbacks.length; i++) {
@@ -177,11 +199,26 @@ function getValueFromCookie(matcher) {
 }
 
 /**
+<<<<<<< Updated upstream
  * Filter an object to only have the properties which are listed in the `allowlist` parameter.
  *
  * @param {object} objectToFilter - An object whose props need to be filtered
  * @param {Array} allowedPropertyNames - The list of props to allow
  * @returns {object} An object containing only the allowed props
+=======
+ * Get a value from the url, used for uuid or querystring parameters
+ * @param {RegExp} matcher - The Regex to match with
+ * @return {String} - The value from the URL
+ */
+function getValueFromUrl(matcher) {
+	return document.location.href.match(matcher) && RegExp.$1 !== '' ? RegExp.$1 : null;
+}
+
+/**
+ * Get a value from a specified JavaScript variable.
+ * @param {String} str - The name of variable, in dot syntax.
+ * @return {String|null} The value from the JS variable.
+>>>>>>> Stashed changes
  */
 function filterProperties (objectToFilter, allowedPropertyNames) {
 	const filteredObject = {};

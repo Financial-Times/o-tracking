@@ -10,8 +10,16 @@
         "type": "git",
         "url": "https://github.com/Financial-Times/o-tracking"
     },
+    "license": "MIT",
     "author": "Financial-Times",
-    "browser": "main.js",
+    "type": "module",
+    "exports": {
+        ".": {
+            "browser": "./main.js"
+        }
+    },
+    "browser": "./main.js",
+    "types": "types",
     "devDependencies": {
         "eslint": "^7.8.1",
 		"eslint-config-origami-component": "^2.1.0",
