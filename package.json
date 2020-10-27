@@ -1,6 +1,6 @@
 {
     "name": "@financial-times/o-tracking",
-    "version": "100.0.0-7",
+    "version": "100.0.0-8",
     "description": "This module should be included on your product to make sending tracking requests to the Spoor API easy.",
     "homepage": "https://github.com/Financial-Times/o-tracking",
     "bugs": {
@@ -32,7 +32,7 @@
 		"stylelint-config-origami-component": "^1.0.4"
     },
     "peerDependencies": {
-        "ftdomdelegate": "^100.0.0-7"
+        "ftdomdelegate": "^100.0.0-8"
     },
     "publishConfig": {
         "registry": "http://localhost:4873"
