@@ -1,40 +1,41 @@
 {
-    "name": "@financial-times/o-tracking",
-    "version": "100.0.0-8",
-    "description": "This module should be included on your product to make sending tracking requests to the Spoor API easy.",
-    "homepage": "https://github.com/Financial-Times/o-tracking",
-    "bugs": {
-        "url": "https://github.com/Financial-Times/o-tracking/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Financial-Times/o-tracking"
-    },
-    "license": "MIT",
-    "author": "Financial-Times",
-    "type": "module",
-    "exports": {
-        ".": {
-            "browser": "./main.js"
-        }
-    },
-    "browser": "./main.js",
-    "types": "types",
-    "devDependencies": {
-        "eslint": "^7.8.1",
-		"eslint-config-origami-component": "^2.1.0",
-		"origami-build-tools": "^10.8.0",
-		"origami-ci-tools": "^2.0.2",
-		"remark": "^13.0.0",
-		"remark-lint": "^8.0.0",
-		"remark-preset-lint-origami-component": "^1.2.0",
-		"stylelint": "^13.7.0",
-		"stylelint-config-origami-component": "^1.0.4"
-    },
-    "peerDependencies": {
-        "ftdomdelegate": "^100.0.0-9"
-    },
-    "publishConfig": {
-        "registry": "https://origami-npm-registry-prototype.herokuapp.com"
+  "name": "@financial-times/o-tracking",
+  "version": "100.0.0-10",
+  "description": "This module should be included on your product to make sending tracking requests to the Spoor API easy.",
+  "keywords": [],
+  "homepage": "https://github.com/Financial-Times/o-tracking",
+  "bugs": {
+    "url": "https://github.com/Financial-Times/o-tracking/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/o-tracking.git"
+  },
+  "license": "MIT",
+  "author": "Financial-Times",
+  "type": "module",
+  "exports": {
+    ".": {
+      "browser": "./main.js"
     }
+  },
+  "browser": "./main.js",
+  "types": "types",
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "eslint-config-origami-component": "^2.1.0",
+    "origami-build-tools": "^10.8.0",
+    "origami-ci-tools": "^2.0.2",
+    "remark": "^13.0.0",
+    "remark-lint": "^8.0.0",
+    "remark-preset-lint-origami-component": "^1.2.0",
+    "stylelint": "^13.7.0",
+    "stylelint-config-origami-component": "^1.0.4"
+  },
+  "peerDependencies": {
+    "ftdomdelegate": "^100.0.0-10"
+  },
+  "publishConfig": {
+    "registry": "https://origami-npm-registry-prototype.herokuapp.com"
+  }
 }
