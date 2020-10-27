@@ -1,6 +1,17 @@
 {
     "name": "@financial-times/o-tracking",
+    "version": "100.0.0-7",
     "description": "Provides tracking for a product. Tracking requests are sent to the Spoor API.",
+    "homepage": "https://github.com/Financial-Times/o-tracking",
+    "bugs": {
+        "url": "https://github.com/Financial-Times/o-tracking/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Financial-Times/o-tracking"
+    },
+    "author": "Financial-Times",
+    "browser": "main.js",
     "devDependencies": {
         "eslint": "^7.8.1",
         "eslint-config-origami-component": "^2.1.0",
@@ -12,21 +23,10 @@
         "stylelint": "^13.7.0",
         "stylelint-config-origami-component": "^1.0.4"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Financial-Times/o-tracking"
-    },
-    "author": "Financial-Times",
-    "bugs": {
-        "url": "https://github.com/Financial-Times/o-tracking/issues"
-    },
-    "homepage": "https://github.com/Financial-Times/o-tracking",
-    "browser": "main.js",
     "peerDependencies": {
         "ftdomdelegate": "^100.0.0-7"
     },
     "publishConfig": {
         "registry": "http://localhost:4873"
-    },
-    "version": "100.0.0-7"
+    }
 }
