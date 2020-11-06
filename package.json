@@ -1,6 +1,6 @@
 {
   "name": "@financial-times/o-tracking",
-  "version": "100.0.0-12",
+  "version": "100.0.0-13",
   "description": "This module should be included on your product to make sending tracking requests to the Spoor API easy.",
   "keywords": [],
   "homepage": "https://github.com/Financial-Times/o-tracking",
@@ -34,7 +34,7 @@
     "typescript": "^4.0.5"
   },
   "peerDependencies": {
-    "ftdomdelegate": "^100.0.0-12"
+    "ftdomdelegate": "^100.0.0-13"
   },
   "publishConfig": {
     "registry": "https://origami-npm-registry-prototype.herokuapp.com"
