@@ -5,14 +5,17 @@ import {broadcast, containsCircularPaths, decode, encode, findCircularPathsIn, i
  * Will choose the 'best' storage method available. Can also specify a type of storage.
  *
  * @class  Store
- * @param {string} name - The name of the store
- * @param {object} config - Optional, config object for extra configuration
- * @param {string} [config.nameOverride] - The internal name for the store
- * @param {string} [config.domain] - The domain that should be used to store cookies on
  */
-const Store = function (name, config = {}) {
-
+export class Store {
 	/**
+	 *
+	 * @param {string} name - The name of the store
+	 * @param {object} config - Optional, config object for extra configuration
+	 * @param {string} [config.nameOverride] - The internal name for the store
+	 * @param {string} [config.domain] - The domain that should be used to store cookies on
+	 */
+	constructor(name, config = {}) {
+		/**
 	 * Internal Storage key prefix.
 	 */
 	const keyPrefix = 'o-tracking';
@@ -135,55 +138,54 @@ const Store = function (name, config = {}) {
 	}
 
 	return this;
-};
-
-/**
- * Get/Read the current data.
- *
- * @returns {object} Returns the data from the store.
- */
-Store.prototype.read = function () {
-	return this.data;
-};
-
-/**
- * Write the supplied data to the store.
- *
- * @param {string} data - The data to write.
- * @returns {Store} - The instance of the store
- */
-Store.prototype.write = function (data) {
-	// Set this.data, in-case we're on a file:// domain and can't set cookies.
-	this.data = data;
-	let value;
-
-	if (typeof this.data === 'string') {
-		value = this.data;
-	} else {
-		if (containsCircularPaths(this.data)) {
-			const errorMessage = "o-tracking does not support circular references in the analytics data.\n" +
-			"Please remove the circular references in the data.\n" +
-			"Here are the paths in the data which are circular:\n" +
-			JSON.stringify(findCircularPathsIn(this.data), undefined, 4);
-			throw new Error(errorMessage);
-		}
-		value = JSON.stringify(this.data);
 	}
 
-	this.storage.save(this.storageKey, value);
+	/**
+	 * Get/Read the current data.
+	 *
+	 * @returns {object} Returns the data from the store.
+	 */
+	read() {
+		return this.data;
+	};
 
-	return this;
-};
+	/**
+	 * Write the supplied data to the store.
+	 *
+	 * @param {string} data - The data to write.
+	 * @returns {Store} - The instance of the store
+	 */
+	write(data) {
+		// Set this.data, in-case we're on a file:// domain and can't set cookies.
+		this.data = data;
+		let value;
 
-/**
- * Delete the current data.
- *
- * @returns {Store} - The instance of the store
- */
-Store.prototype.destroy = function () {
-	this.data = null;
-	this.storage.remove(this.storageKey);
-	return this;
-};
+		if (typeof this.data === 'string') {
+			value = this.data;
+		} else {
+			if (containsCircularPaths(this.data)) {
+				const errorMessage = "o-tracking does not support circular references in the analytics data.\n" +
+				"Please remove the circular references in the data.\n" +
+				"Here are the paths in the data which are circular:\n" +
+				JSON.stringify(findCircularPathsIn(this.data), undefined, 4);
+				throw new Error(errorMessage);
+			}
+			value = JSON.stringify(this.data);
+		}
 
-export { Store };
+		this.storage.save(this.storageKey, value);
+
+		return this;
+	};
+
+	/**
+	 * Delete the current data.
+	 *
+	 * @returns {Store} - The instance of the store
+	 */
+	destroy() {
+		this.data = null;
+		this.storage.remove(this.storageKey);
+		return this;
+	};
+}
