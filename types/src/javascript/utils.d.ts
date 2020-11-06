@@ -1,7 +1,6 @@
 /**
  * Log messages to the browser console. Requires 'log' to be set on init.
  *
-<<<<<<< Updated upstream
  * @param {*} args items to log
  * @returns {void}
  */
@@ -61,21 +60,13 @@ export function broadcast(namespace: string, eventType: string, detail: object):
  * Listen for page tracking requests.
  *
  * @param {Function} cb - The callback to be called whenever a page is tracked.
-<<<<<<< Updated upstream
  * @returns {void}
-=======
- * @return {void}
->>>>>>> Stashed changes
  */
 export function onPage(cb: Function): void;
 /**
  * Trigger the 'page' listeners.
-<<<<<<< Updated upstream
  *
  * @returns {void}
-=======
- * @return {void}
->>>>>>> Stashed changes
  */
 export function triggerPage(): void;
 /**
@@ -101,12 +92,13 @@ export function sanitise(str: string): string;
  */
 export function assignIfUndefined(subject: object, target: object): void;
 /**
- * Get a value from a specified JavaScript variable.
- * @param {String} str - The name of variable, in dot syntax.
- * @return {String|null} The value from the JS variable.
->>>>>>> Stashed changes
+ * Filter an object to only have the properties which are listed in the `allowlist` parameter.
+ *
+ * @param {object} objectToFilter - An object whose props need to be filtered
+ * @param {Array} allowedPropertyNames - The list of props to allow
+ * @returns {object} An object containing only the allowed props
  */
-export function filterProperties(objectToFilter: any, allowedPropertyNames: any): string | null;
+export function filterProperties(objectToFilter: object, allowedPropertyNames: any[]): object;
 /**
  * Used to find out all the paths which contain a circular reference.
  *
