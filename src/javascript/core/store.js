@@ -53,6 +53,11 @@ const Store = function (name, config = {}) {
 			return window.localStorage.setItem(name, value);
 		},
 		remove: function (name) {
+			// We attempt to remove the item from the old cookie storage
+			// because otherwise the next time o-tracking is initialised for
+			// this user, it will import the old value which was meant to
+			// have been removed.
+			cookieRemove(name);
 			return window.localStorage.removeItem(name);
 		}
 	};
@@ -116,14 +121,21 @@ const Store = function (name, config = {}) {
 	const oldCookieStoreData = cookieLoad(this.storageKey);
 	if (oldCookieStoreData) {
 		try {
-			const data = JSON.parse(oldCookieStoreData);
-			if (this.data) {
-				Object.assign(this.data, data);
+			if (this.storageKey === 'spoor-id') {
+				// spoor-id is stored directly as a string and not as an object
+				this.data = oldCookieStoreData;
 			} else {
-				this.data = data;
-			}
-			for (const name of Object.keys(data)) {
-				cookieRemove(name);
+				const data = JSON.parse(oldCookieStoreData);
+				if (this.data) {
+					Object.assign(this.data, data);
+				} else {
+					this.data = data;
+				}
+				for (const name of Object.keys(data)) {
+					if (name !== 'spoor-id') {
+						cookieRemove(name);
+					}
+				}
 			}
 		} catch (error) {
 			broadcast('oErrors', 'log', {
