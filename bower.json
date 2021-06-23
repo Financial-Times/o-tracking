@@ -6,8 +6,7 @@
   "ignore": [
     "node_modules",
     "resources",
-    "test",
-    ".idea"
+    "test"
   ],
   "description": "Origami module for FT tracking.",
   "dependencies": {
