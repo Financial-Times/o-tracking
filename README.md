@@ -1,5 +1,11 @@
 # o-tracking
 
+***
+
+**This component has moved to the [Origami Component System](https://github.com/Financial-Times/origami).**
+
+***
+
 Include in your product to send tracking requests to the [Spoor API](https://spoor-docs.herokuapp.com/).
 
 - [Usage](#usage)
