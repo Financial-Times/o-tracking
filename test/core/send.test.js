@@ -88,6 +88,36 @@ describe('Core.Send', function () {
 			}, 100);
 		});
 
+		it('fallback to xhr when config.queue is set to true', function (done) {
+			set('config', {queue:true});
+			new Queue('requests').replace([]);
+			init();
+
+			const xhr = window.XMLHttpRequest;
+			const dummyXHR = {
+				withCredentials: false,
+				open: sinon.stub(),
+				setRequestHeader: sinon.stub(),
+				send: sinon.stub()
+			};
+			window.XMLHttpRequest = function () {
+				return dummyXHR;
+			};
+			addAndRun(request);
+			setTimeout(() => {
+				try {
+					proclaim.ok(dummyXHR.withCredentials, 'withCredentials');
+					proclaim.ok(dummyXHR.open.calledWith("POST", "https://spoor-api.ft.com/px.gif?type=video:seek", true), 'is POST');
+					proclaim.ok(dummyXHR.setRequestHeader.calledWith('Content-type', 'application/json'), 'is application/json');
+					proclaim.ok(dummyXHR.send.calledOnce, 'calledOnce');
+					window.XMLHttpRequest = xhr;
+					destroy('config');
+					done();
+				} catch (error) {
+					done(error);
+				}
+			}, 100);
+		});
 
 		it('fallback to xhr when sendBeacon not supported', function (done) {
 			new Queue('requests').replace([]);
@@ -107,10 +137,6 @@ describe('Core.Send', function () {
 			addAndRun(request);
 			setTimeout(() => {
 				try {
-					proclaim.equal(typeof dummyXHR.onerror, 'function');
-					proclaim.equal(typeof dummyXHR.onload, 'function');
-					// proclaim.equal(dummyXHR.onerror.length, 1) // it will get passed the error
-					// proclaim.equal(dummyXHR.onload.length, 0) // it will not get passed an error
 					proclaim.ok(dummyXHR.withCredentials, 'withCredentials');
 					proclaim.ok(dummyXHR.open.calledWith("POST", "https://spoor-api.ft.com/px.gif?type=video:seek", true), 'is POST');
 					proclaim.ok(dummyXHR.setRequestHeader.calledWith('Content-type', 'application/json'), 'is application/json');
@@ -142,7 +168,8 @@ describe('Core.Send', function () {
 			addAndRun(request);
 			setTimeout(() => {
 				try {
-					const payload = dummyImage.src.split('?')[1];
+					const [domain, payload] = dummyImage.src.split('?');
+					proclaim.equal(domain, "https://spoor-api.ft.com/px.gif");
 					proclaim.equal(decodeURIComponent(payload), 'type=video:seek&data={"system":{"transport":"image","is_live":true},"id":"1.199.83760034665465.1432907605043.-56cf00f","meta":{"page_id":"page_id","type":"event"},"user":{"spoor_session":"MS4zMTMuNTYxODY1NTk0MjM4MDQuMTQzMjkwNzYwNTAzNi4tNTZjZjAwZg==","spoor_id":"value3"},"device":{"user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/534.34 (KHTML, like Gecko) PhantomJS/1.9.8 Safari/534.34"},"category":"video","action":"seek","context":{"key":"pos","value":"10","parent_id":"1.990.74606760405.1432907605040.-56cf00f"}}');
 					proclaim.equal(dummyImage.addEventListener.args[0][0], 'error');
 					proclaim.equal(dummyImage.addEventListener.args[0][1].length, 1);// it will get passed the error
@@ -202,8 +229,6 @@ describe('Core.Send', function () {
 
 			addAndRun(request);
 
-			// console.log((new Queue('requests')).storage.storage._type);
-
 			server.respond();
 			// Respond again for Image fallback
 			server.respondWith([500, { "Content-Type": "plain/text", "Content-Length": 5 }, "NOT OK"]);
@@ -236,8 +261,6 @@ describe('Core.Send', function () {
 		}
 
 		queue.save();
-
-		// console.log(queue.all().length);
 
 		server.respondWith([200, { "Content-Type": "plain/text", "Content-Length": 2 }, "OK"]);
 
